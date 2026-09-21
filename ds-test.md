@@ -1,6 +1,6 @@
 ---
 name: ds-test
-description: Read-only QA/test of one foundation component for one platform. Checks structure, tokens, Text Styles, variants/states, themes, a11y WCAG 2.2 design evidence, EN LTR + AR RTL, Web/Tablet/Mobile platform rules. Use after /ds-build.
+description: Read-only QA/test of one foundation component for one platform. Checks structure, tokens, Text Styles, variants/states, themes, a11y WCAG 2.2 design evidence plus APCA additional contrast confirmation, EN LTR + AR RTL, Web/Tablet/Mobile platform rules. Default report is a short What/Why/How findings table; full matrices only on request. Use after /ds-build.
 ---
 
 # Design System Test
@@ -11,7 +11,7 @@ Act as an independent design-system QA reviewer.
 
 ## Objective
 
-Run a read-only test of **exactly one foundation component on exactly one platform**. Produce evidence-based findings.
+Run a read-only test of **exactly one foundation component on exactly one platform**. Produce evidence-based findings in the **simple default report** (What / Why / How). Expand full matrices only when asked.
 
 This Skill is read-only. Do not edit, fix, rename, detach, create, move, or delete anything.
 
@@ -188,9 +188,9 @@ Fail on overlap, unexpected clipping, unstable height/width, inconsistent Auto L
 
 Use the component checklist for the target (Button, Input, Checkbox, Table, etc.). Required states must be present or explicitly documented as unsupported for this platform.
 
-### 8. Accessibility test (WCAG 2.2 design evidence)
+### 8. Accessibility test (WCAG 2.2 design evidence + APCA confirmation)
 
-Baseline: WCAG 2.2 Level AA design evidence. Do not claim full WCAG compliance from Figma alone.
+Baseline: WCAG 2.2 Level AA design evidence. **Additional confirmation:** APCA (Lc). Do not claim full WCAG compliance or WCAG 3 conformance from Figma alone.
 
 Classify each check:
 
@@ -203,7 +203,11 @@ Classify each check:
 
 Cover:
 
-- Contrast (text ≥ 4.5:1; large text / essential UI ≥ 3:1) — measure, do not guess
+- **Contrast — WCAG 2.2 AA** (text ≥ 4.5:1; large text / essential UI ≥ 3:1) — measure, do not guess
+- **Contrast — APCA additional confirmation** on the same critical pairs — record signed Lc and \|Lc\|; use Bronze Simple Mode guidance unless the contract is stricter (body/fluent prefer \|Lc\| ≥ 75, preferred 90; large/secondary often ≥ 60; UI/borders often ≥ 45). APCA does **not** replace WCAG in this package
+- Report polarity correctly (light-on-dark typically negative Lc)
+- Flag conflicts: WCAG pass / APCA fail (or reverse) as accessibility findings — do not bury them
+- **Component-set example shade/tint follow-up:** if examples on the page (or user-cited examples) use colors from this set, verify they follow shade/tint steps that pass **both** methods; failing copied raw fills → finding
 - Focus visibility (not clipped; distinct from Hover/Pressed/Error; Light + Dark)
 - Target size (≥ 24×24 CSS px AA baseline; product Mobile/Tablet touch standard when present)
 - Labels and icon-only naming guidance
@@ -214,7 +218,7 @@ Cover:
 - Reading order and grouping
 - Motion / reduced-motion guidance when motion exists
 
-Use stable IDs `A11Y-001`, `A11Y-002`, … for accessibility findings. Include principle, evidence class, variant/layer, platform, theme, language/direction, measurement, user impact, expected result, design fix, documentation fix, runtime handoff, and severity.
+Use stable IDs `A11Y-001`, `A11Y-002`, … for accessibility findings. Include principle, evidence class, variant/layer, platform, theme, language/direction, **WCAG measurement**, **APCA Lc**, user impact, expected result, design fix (prefer next passing shade/tint on the approved ramp), documentation fix, runtime handoff, and severity.
 
 Never claim from Figma alone: semantic HTML, ARIA, accessibility-tree names, keyboard handling, screen-reader announcements, focus management, DOM order, live regions, or reduced-motion media queries.
 
@@ -224,7 +228,7 @@ Check Leading/Trailing naming, Start/End alignment, directional icon mirroring o
 
 ### 10. Documentation test
 
-Check purpose, anatomy, property table, usage, do/don’t, token map, platform example, EN + AR examples, Light + Dark, accessibility guidance, readiness label, and `CC-*` traceability. Gaps that block safe handoff → recommend `/ds-document`.
+Check component docs sections: Overview, Styles & Variables (scoped + contextual), Anatomy, Variants, Behavior & interaction, Detail specs, Usage (Use for / Don’t use for), Composition, Edge cases, Status—plus platform example, EN + AR / Light + Dark coverage, readiness label, and `CC-*` traceability. No overlapping restatements across sections. Foundations must be linked, not redefined. Gaps that block safe handoff → recommend `/ds-document`.
 
 ## Pass gates
 
@@ -244,6 +248,8 @@ The component passes only when:
 - Auto Layout resizing is stable; no unintended overlap or unexpected clipping
 - Matching variants use consistent Auto Layout sizing/padding/gaps
 - Focus and disabled behavior are clear at design level
+- Critical contrast pairs pass **WCAG 2.2 AA and APCA additional confirmation** (or are explicitly N/A per contract)
+- Component-set examples (when present) follow shade/tint steps that pass both methods
 - Runtime-only checks are handed off, not falsely marked verified
 - Public properties are usable; nested dependencies remain instances
 - Documentation is sufficient for use on this platform
@@ -257,75 +263,44 @@ Result labels:
 
 ## Output format
 
-### Test Result
+Default report is **simple and short**. Still run the full test workflow above; do not skip checks. Put detail in the simple table. Emit expanded tables **only when the user asks** (e.g. “show contrast table”, “full matrices”).
+
+### Default report (always)
+
+#### Test Result
 
 - Component
 - Platform
-- Contract ID / version / status
+- Contract ID / version / status / source (brief)
 - Result: `Pass`, `Pass with minor findings`, or `Fail`
 - Critical / Major / Moderate / Minor counts
-- Highest-risk issue
+- Highest-risk issue (one line, or `None`)
 
-### Contract Intake
+#### Findings
 
-| Field | Value | Evidence source |
-|---|---|---|
+One table. Easy language. One row per issue (or `No findings` if clean).
 
-### Contract Drift
+| ID | Severity | Where | What | Why it matters | How to fix |
+|---|---|---|---|---|---|
 
-| Contract area | Contract says | Observed | Drift severity | Finding ID |
-|---|---|---|---|---|
+Rules:
 
-### Findings
+- Stable IDs: `QA-001`, `QA-002`, …
+- Accessibility rows also get `A11Y-*` (same row is fine, e.g. `QA-001 / A11Y-001`)
+- Contract mismatch → say so in **What**; severity matches the broken behavior
+- **Where** = variant, layer, or property path
+- **What** = plain-language issue + short evidence (measure, screenshot note, or panel fact)
+- **Why it matters** = user/system impact in one short phrase
+- **How to fix** = concrete repair (token, Text Style, layout, state, docs) — prefer next passing shade/tint on the approved ramp for contrast
+- Include WCAG ratio and APCA Lc in **What** or **How to fix** when the finding is contrast-related
+- Pass runs may omit the table and write `No findings`
 
-| ID | Severity | Area | Variant or layer | Issue | Evidence | Expected result | Recommended fix |
-|---|---|---|---|---|---|---|---|
-
-Use stable IDs `QA-001`, `QA-002`, …. Use area `Contract drift` when the issue is mismatch vs `CC-*`. Accessibility findings also get `A11Y-*` IDs (may map to the same row or a linked row).
-
-### Text Style Assignment Review
-
-| Text node or role | Variant/state | Language | Platform/mode | Expected Text Style | Assigned Text Style | Internal variables verified | Local override | Result | Finding ID |
-|---|---|---|---|---|---|---|---|---|---|
-
-### Coverage Matrix
-
-| Requirement | Supported | Verified | Notes |
-|---|---|---|---|
-
-### Theme and Language Matrix
-
-| Scenario | Result | Evidence |
-|---|---|---|
-
-Include Light+EN, Dark+EN, Light+AR, Dark+AR, and this platform’s narrow/wide stress cases.
-
-### Binding Summary
-
-| Binding type | Correct | Raw | Primitive misuse | Missing semantic token |
-|---|---:|---:|---:|---:|
-
-### Nested Dependency Reuse
-
-| Need | Approved dependency available | Observed | Result | Finding ID |
-|---|---|---|---|---|
-
-### Pixel-Perfect Auto Layout Review
-
-| Check | Result | Evidence | Finding ID |
-|---|---|---|---|
-
-### RTL Readiness
-
-| Check | Result | Evidence | Finding ID |
-|---|---|---|---|
-
-### Recommended Fix Order
+#### Recommended Fix Order
 
 1. Critical → 2. Major → 3. Moderate → 4. Minor  
-Prioritize contract-drift findings at the same severity as the behavior they affect.
+Same severity: contract-drift with the behavior it affects.
 
-### Recommended Next Command
+#### Recommended Next Command
 
 Return exactly one:
 
@@ -334,14 +309,105 @@ Return exactly one:
 - `/ds-plan` — contract missing, Blocked, or major drift needs replanning
 - `Component is ready` — Pass with no blocking follow-up
 
+### Field meanings (for the agent; keep language this simple in the table)
+
+| Field | What it is | Why it matters | How to fix |
+|---|---|---|---|
+| Component + Platform | What you tested | One thing at a time | Re-test with the right name |
+| Contract (`CC-*`) | Approved plan for this component | Test must match the plan | Missing/wrong → `/ds-plan` |
+| Result | Pass / Pass with minor / Fail | Ready or not | Fail → `/ds-fix`, then re-test |
+| Severity | Critical → Minor | Big issues block shipping | Fix Critical and Major first |
+| Finding ID | Problem number | `/ds-fix` targets exact rows | Cite IDs when fixing |
+| Where | Exact spot in Figma | No guessing | Open that layer and change it |
+| What | What’s wrong + proof | No vague opinions | Re-check after the fix |
+| Why it matters | Impact | Prioritize real risk | Fix blockers first |
+| How to fix | Clear repair step | Definition of done | Do that; don’t redesign |
+| Next command | One next step | Avoids thrash | Do only that step |
+
+### Expanded detail (only when asked)
+
+Keep the same rigor; output these sections when the user requests more detail:
+
+#### Contract Intake
+
+| Field | Value | Evidence source |
+|---|---|---|
+
+#### Contract Drift
+
+| Contract area | Contract says | Observed | Drift severity | Finding ID |
+|---|---|---|---|---|
+
+#### Findings (detailed)
+
+| ID | Severity | Area | Variant or layer | Issue | Evidence | Expected result | Recommended fix |
+|---|---|---|---|---|---|---|---|
+
+#### Text Style Assignment Review
+
+| Text node or role | Variant/state | Language | Platform/mode | Expected Text Style | Assigned Text Style | Internal variables verified | Local override | Result | Finding ID |
+|---|---|---|---|---|---|---|---|---|---|
+
+#### Coverage Matrix
+
+| Requirement | Supported | Verified | Notes |
+|---|---|---|---|
+
+#### Theme and Language Matrix
+
+| Scenario | Result | Evidence |
+|---|---|---|
+
+Include Light+EN, Dark+EN, Light+AR, Dark+AR, and this platform’s narrow/wide stress cases.
+
+#### Contrast Confirmation (WCAG + APCA)
+
+| Pair (role / layer) | Theme | Foreground | Background | WCAG ratio | WCAG pass? | APCA Lc (signed) | \|Lc\| | APCA pass? | Finding ID |
+|---|---|---|---|---|---|---|---|---|---|---|
+
+Required pairs must pass **both** unless §9 marks them decorative/disabled with explicit allowance. Conflicts (one method pass, one fail) are findings.
+
+#### Shade / Tint Follow-up (examples)
+
+| Example / source | Role | Step used | Pass both? | Issue | Finding ID |
+|---|---|---|---|---|---|
+
+If no component-set examples are present, write `None`.
+
+#### Binding Summary
+
+| Binding type | Correct | Raw | Primitive misuse | Missing semantic token |
+|---|---:|---:|---:|---:|
+
+#### Nested Dependency Reuse
+
+| Need | Approved dependency available | Observed | Result | Finding ID |
+|---|---|---|---|---|
+
+#### Pixel-Perfect Auto Layout Review
+
+| Check | Result | Evidence | Finding ID |
+|---|---|---|---|
+
+#### RTL Readiness
+
+| Check | Result | Evidence | Finding ID |
+|---|---|---|---|
+
+#### Accessibility detail (`A11Y-*`)
+
+When asked: principle, evidence class, platform, theme, language/direction, WCAG measurement, APCA Lc, user impact, expected result, design fix, documentation fix, runtime handoff, severity.
+
 ## Completion gate
 
 Complete only when:
 
 - The component was not modified
 - One component + one platform were tested
-- Contract intake was attempted and recorded
-- Structure, bindings, typography, theme, responsive/platform, states, a11y, RTL, and documentation were covered
+- Contract intake was attempted and recorded in Test Result
+- Structure, bindings, typography, theme, responsive/platform, states, a11y, RTL, and documentation were covered in the review (even if not all printed)
 - Nested dependency reuse was reviewed when relevant
-- Every failure has evidence and a stable `QA-*` (and `A11Y-*` when accessibility)
+- Default report uses the simple Findings table (or `No findings`)
+- Every failure has plain-language What / Why / How, a Where path, and a stable `QA-*` (and `A11Y-*` when accessibility)
+- Expanded tables are omitted unless the user asked for them
 - Pass result follows the stated gates

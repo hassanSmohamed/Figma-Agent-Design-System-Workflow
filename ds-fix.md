@@ -101,12 +101,14 @@ Default:
 21. Do not add fake hidden text/ARIA layers to simulate code semantics.
 22. Separate design fixes, documentation fixes, and runtime handoff.
 23. Do not solve contrast by binding to primitives.
-24. Do not shrink approved typography or target size to fit dense layout.
-25. Match the `CC-*` contract unless an approved contract update is in scope.
-26. Replace rebuilt nested dependencies with approved instances when they exist.
-27. Bind unexplained raw production values to approved Variables/Styles.
-28. Repair overlap, clipping, and inconsistent Auto Layout before marking layout fixed.
-29. Do not use absolute positioning to hide Auto Layout defects.
+24. Contrast repairs must re-confirm with **WCAG 2.2 AA and APCA**; prefer the next shade/tint on the approved ramp that passes **both**.
+25. If the finding cites a component-set example, follow that example’s passing semantic step — or move along the ramp — do not invent off-ramp hex.
+26. Do not shrink approved typography or target size to fit dense layout.
+27. Match the `CC-*` contract unless an approved contract update is in scope.
+28. Replace rebuilt nested dependencies with approved instances when they exist.
+29. Bind unexplained raw production values to approved Variables/Styles.
+30. Repair overlap, clipping, and inconsistent Auto Layout before marking layout fixed.
+31. Do not use absolute positioning to hide Auto Layout defects.
 
 ## Foundation Proposal Contract (`FP-*`)
 
@@ -244,61 +246,60 @@ Stop and report when:
 
 ## Output format
 
-### Fix Result
+Default report is **simple tables only**. Easy language. Do not emit empty matrices. Keep contract intake, full change logs, Text Style maps, and regression matrices internal unless the user asks for a full audit.
 
-- Component / Platform
-- Contract ID
-- Contract version before / after
-- Result: `Fixed`, `Partially fixed`, or `Blocked`
-- Findings fixed / skipped / needing migration approval
-- New foundation gaps
+### Fix Result — {Component} / {Platform}
 
-### Contract Intake
+| Field | Value |
+|---|---|
+| Status | `Fixed`, `Partially fixed`, or `Blocked` |
+| Contract | `CC-*` (version before → after, or unchanged) |
+| Platform | Web, Tablet, or Mobile |
 
-| Field | Value | Evidence source |
+### Fixed
+
+| ID | What changed | Checked |
 |---|---|---|
 
-### API Before and After
+One row per fixed finding. Use plain language. Include the exact Variable/Text Style when relevant. Leave the table as `None` if nothing was fixed.
 
-| API area | Before | After | Breaking |
+### Still open
+
+| ID | Problem | Why not fixed | Options (pick one) | Try again |
+|---|---|---|---|---|
+
+One row per unresolved Critical/Major finding (including migration and `FP-*` stops).  
+**Why not fixed** must be concrete (missing approval, breaking API, runtime-only, product decision, etc.).  
+**Options** must be actionable (approve `FP-*`, approve migration, `/ds-plan`, document exception).  
+**Try again** must tell the user the exact reply that unblocks the next `/ds-fix` (or the command to run).  
+Leave as `None` if everything in scope is fixed.
+
+### Skipped
+
+| ID | Reason |
+|---|---|
+
+Include: no longer reproducible, Moderate/Minor out of scope, already fixed. Leave as `None` if nothing was skipped.
+
+### Next
+
+List only the actions that apply to this run:
+
+| Action | When |
+|---|---|
+| `/ds-fix` | After the user picks an option under Still open |
+| `/ds-test` | Recheck Fixed items (default when anything was mutated) |
+| `/ds-plan` | Contract update or replanning required |
+| `/ds-document` | Behavior fixed; docs still incomplete |
+| `Approve FP-*` then `/ds-fix` | Waiting on foundation approval |
+| `Approve migration` then `/ds-fix` | Breaking change blocked |
+
+Optional — only when the public API actually changed:
+
+### API change
+
+| What | Before | After | Breaking? |
 |---|---|---|---|
-
-### Contract Drift and Resolution
-
-| Contract area | Contract says | Observed before | Repair action | Result |
-|---|---|---|---|---|
-
-### Change Log
-
-| Finding ID | Changed object | Change | Exact Text Style or variable used | Validation |
-|---|---|---|---|---|
-
-### Text Style Repair Map
-
-| Text node or role | Before | Exact Text Style after | Internal variables verified | Overrides removed | Result |
-|---|---|---|---|---|---|
-
-### Unresolved Findings
-
-| Finding ID | Reason | Required next decision |
-|---|---|---|
-
-### Regression Check
-
-| Check | Pass/Fail | Evidence |
-|---|---|---|
-
-Include: property behavior, Light/Dark, EN/AR stress, Text Styles, resize, nested dependencies, focus/disabled, contrast/target where changed, runtime handoff.
-
-### Recommended Next Command
-
-Return exactly one:
-
-- `/ds-test` — recheck after repairs (default when anything was fixed)
-- `/ds-document` — behavior fixed; docs still incomplete
-- `/ds-plan` — contract update or replanning required
-- `Resolve foundation gap` — waiting on `FP-*` approval
-- `Approve migration proposal` — breaking change blocked
 
 ## Completion gate
 
@@ -318,4 +319,4 @@ A fix is complete only when:
 - Typography/Text Style integrity revalidated when affected
 - Changed `A11Y-*` design findings revalidated; runtime work not falsely marked done
 - No fake semantic layers; no unrelated components modified
-- Next step recommends `/ds-test` when mutations occurred
+- Next table lists `/ds-test` when mutations occurred, and `/ds-fix` retry paths when Still open items need approval

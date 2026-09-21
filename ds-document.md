@@ -1,6 +1,6 @@
 ---
 name: ds-document
-description: Creates or updates in-file Figma documentation for one foundation component including all states and variants, contextual variable usage examples, and user-facing annotations. Docs-only; never changes source component API. Use after /ds-test passes or when documenting an approved component.
+description: Creates or updates in-file Figma documentation for one foundation component on one platform—consumer sections Overview through Edge cases, with scoped Styles & Variables and contextual examples. Docs-only; never changes source component API. Foundations docs are separate from component docs. Use after /ds-test passes or when documenting an approved component.
 ---
 
 # Design System Document
@@ -13,7 +13,9 @@ Act as a senior design-system documentation designer and library maintainer.
 
 Create or update clear, production-ready **in-file** documentation for **exactly one** selected or named foundation component on the selected platform.
 
-Docs must help product designers, consumers, developers, and QA understand purpose, configuration, states, tokens-in-context, EN LTR vs AR RTL, accessibility, and status—without changing the source component API.
+Docs must help product designers, consumers, developers, and QA understand purpose, styles/variables in scope, anatomy, variants, behavior, specs, usage boundaries, composition, and edge cases—without changing the source component API and without overlapping content across sections.
+
+**Foundations** (tokens, variables, styles, effects, grid) use a **different** doc shape than **components**. This skill documents **components**. Cross-link foundation pages; do not redefine the token system on the component page.
 
 ## When to run
 
@@ -33,7 +35,7 @@ Create documentation for {Component Name} / {Web | Tablet | Mobile}, including a
 
 ## Mutation scope (docs-only)
 
-**Allowed:** documentation pages/frames, annotations, tables, captions, and **live source instances** used as examples.
+**Allowed:** documentation pages/frames, callouts next to examples, tables, captions, and **live source instances** used as examples.
 
 **Forbidden:**
 
@@ -44,8 +46,9 @@ Create documentation for {Component Name} / {Web | Tablet | Mobile}, including a
 - Replace semantic bindings or “fix” defects silently
 - Modify original usage-evidence screens
 - Mark production-ready without evidence
+- Create a second docs page for the same component × platform
 
-When a defect is found: document it and recommend `/ds-fix`. Do not repair the source in this Skill.
+When a defect is found: document it under **Edge cases** / **Status** and recommend `/ds-fix`. Do not repair the source in this Skill.
 
 ## Supported foundation components
 
@@ -64,6 +67,32 @@ Document the **selected platform component** only:
 Naming: `{Component Name} / {Web | Tablet | Mobile}`.
 
 When sibling platform components exist, **cross-link** them (do not rebuild their full docs here). Note verified differences only.
+
+## Doc types (do not mix)
+
+### Component docs (this skill)
+
+**Job:** how to use **this** component with foundations—never redefine the foundation inventory.
+
+Prefer placement:
+
+```text
+Docs / Components / [Component Name] / [Platform]
+```
+
+### Foundation docs (out of scope for full authoring here)
+
+**Job:** define system vocabulary (inventory, semantics, modes, bind guidance).
+
+Prefer placement:
+
+```text
+Docs / Foundations / [Set Name]
+```
+
+Typical foundation sections only: Overview → Inventory → Semantics & roles → Usage with components → Do / Don't → Status.
+
+When documenting a component: **link** to foundation pages. If a binding is missing from Foundations, mark `Unverified` or record a gap—do not invent or fully redefine tokens on the component page.
 
 ## Target resolution
 
@@ -110,7 +139,7 @@ Intake must cover contract areas for: purpose, anatomy, public API, **full varia
 If no reliable contract → `Blocked: missing component contract`.  
 If status is `Blocked` → do not publish final “approved” docs → `Blocked: component contract is Blocked`.
 
-**Incomplete variants/states vs `CC-*` = documentation not done.**
+**Incomplete variants vs `CC-*` = documentation not done.**
 
 ## Usage-evidence intake (mandatory, with skip)
 
@@ -139,7 +168,7 @@ User may say:
 Skip usage screens and create source-only documentation.
 ```
 
-Continue, but mark contextual sections `Usage evidence pending`.
+Continue, but mark **Composition** / evidence-dependent notes `Usage evidence pending`.
 
 ### Screens already available
 
@@ -151,7 +180,7 @@ Per screen record: source, platform, flow, screen, location, role, variant/state
 
 ## Known foundation profile
 
-Expect, then verify in file:
+Expect, then verify in file (for **binding references** on the component page—not for rewriting foundation docs):
 
 | Foundation | Expected |
 |---|---|
@@ -166,7 +195,7 @@ Expect, then verify in file:
 ## Documentation principles
 
 1. Live source instances only—no detach, no visual replicas as truth  
-2. Update existing docs; do not duplicate pages  
+2. Update existing docs; do not duplicate pages for the same component × platform  
 3. Exact Figma property names and supported values  
 4. Semantic tokens—not primitives—as guidance  
 5. Visual examples before dense tables  
@@ -174,86 +203,104 @@ Expect, then verify in file:
 7. Separate shared rules from platform differences  
 8. EN LTR + AR RTL; Light + Dark when supported  
 9. A11y: design evidence vs `Implementation requirement` for runtime  
-10. Place annotations next to related examples  
-11. Incomplete matrix or missing contextual tokens / consumer annotations = not complete  
+10. Callouts sit **beside** examples inside the owning section—not a separate Annotations chapter  
+11. **Single ownership:** each fact lives in one section; other sections may link, never restate  
 
-## Required documentation sections
+## Anti-overlap rules
 
-Create or update these sections in order (names may match file convention; content must match):
+| Fact | Only lives in |
+|---|---|
+| What it is / platforms / support flags | Overview |
+| Token/style names + scope + contextual binding scenes | Styles & Variables |
+| Parts of one instance | Anatomy |
+| Selectable options / structural matrix | Variants |
+| Hover, focus, pressed, disabled, loading, RTL behavior, a11y behavior | Behavior & interaction |
+| Property API, defaults, sizing, nested deps | Detail specs |
+| Use for / Don’t use for + alternatives | Usage |
+| Layout with neighboring components | Composition |
+| Rare / failure / overflow / long text | Edge cases |
+| Docs honesty, gaps, next command | Status |
 
-1. **Overview** — purpose, when to use / not, status, platforms, themes, directions, contract ID/version, hero instance  
-2. **Context** — usage gallery / map from evidence (or `Usage evidence pending`)  
-3. **Anatomy** — numbered callouts on a live instance + part table  
-4. **Variants and States** — **complete matrix** per `CC-*` (all contracted axes/values; no invented combos)  
-5. **Properties** — exact API how-to table  
-6. **Variable usage examples (contextual)** — product-like scenes showing how tokens/variables are used **with** the component (not a token list alone)  
-7. **Annotations** — consumer-facing callouts for every required topic (see below)  
-8. **Themes / Localization RTL** — Light/Dark + EN LTR / AR RTL matrix; long/mixed text when relevant  
-9. **Accessibility** — focus, targets, contrast, labels, non-color status, errors; runtime marked separately  
-10. **Do / Don't** — paired contextual examples with reasons  
-11. **Status** — docs status, known gaps, defects → `/ds-fix`, links to siblings and prior skills  
+Additional rules:
+
+- No **Annotations** section—inline callouts only  
+- **Use for / Don’t use for** only under **Usage** (not Overview)  
+- **Variants** = structure consumers select; **Behavior** = interaction—do not merge into one mega-grid unless the contract forces it  
+- **Composition ≠ Styles & Variables**—Composition shows product layout; Styles & Variables names bindings  
+- Foundation names are **references**; do not copy full foundation inventories onto the component page  
+
+## Required component sections
+
+Create or update these sections **in order**. Names may match file convention; content ownership must match.
+
+1. **Overview** — purpose, platforms, theme/direction support flags, contract ID/version, hero instance, sibling links. No full Use/Don’t list.  
+2. **Styles & Variables** — scoped bindings for this component + contextual product-like examples (see below).  
+3. **Anatomy** — numbered callouts on a live instance + part table (required/optional).  
+4. **Variants** — complete matrix per `CC-*` (every contracted value ≥ once); restricted combos labeled.  
+5. **Behavior & interaction** — state meaning, pointer/keyboard, focus, loading/disabled rules, EN LTR vs AR RTL behavior, design-time a11y (contrast **WCAG 2.2 AA + APCA**, targets); runtime marked `Implementation requirement`.  
+6. **Detail specs** — exact property names, defaults, safe combinations, Hug/Fill, targets, nested dependencies.  
+7. **Usage** — **Use for** / **Don’t use for** + preferred alternatives.  
+8. **Composition** — product-like layouts with siblings (form row, toolbar, dialog footer); spacing between components; or `Usage evidence pending`.  
+9. **Edge cases** — long/mixed text, empty/error/overflow, platform quirks, known defects → `/ds-fix`.  
+10. **Status** — short: docs status, gaps, sibling links, one next command.  
 
 Optional compact playground is allowed if it uses live instances and does not duplicate the source set.
 
-## Annotations (every consumer-facing point)
+### Styles & Variables (component-scoped)
 
-Place annotations **beside related examples**, not only in a distant appendix. Cover all of:
+Do **not** ship a bare token dump or redefine Foundations here.
 
-| Topic | Must explain |
+For each major part, document:
+
+| Field | Purpose |
 |---|---|
-| Purpose | What problem it solves |
-| When to use / not | Boundaries and alternatives |
-| Anatomy | Parts and optional slots |
-| Properties how-to | Exact names, defaults, safe combinations |
-| State meaning | What each state communicates |
-| Sizing / platform | Hug/Fill, targets, Web vs Tablet vs Mobile notes |
-| EN LTR vs AR RTL | Layout, icons, typography roles |
-| Token guidance | Semantic roles in context (bg, text, border, focus, spacing, radius, type) |
-| Accessibility | Design-time rules + implementation requirements |
-| Do / Don't | Concrete misuse prevention |
+| Part | e.g. Container, Label, Icon, Focus ring |
+| Role | bg, text, border, focus, spacing, radius, type, effect |
+| Exact semantic variable / text style / effect | File-accurate name |
+| Scope | Component / Semantic Light·Dark / Platform type mode / shared scale |
+| Mode notes | Light/Dark or EN/AR as applicable |
+| Example | Live instance callout |
 
-Number callouts consistently; keep labels outside the instance.
-
-## Variants and States (complete coverage)
-
-Build the matrix from the **`CC-*` variant and state model** plus verified source support.
-
-- Include every contracted Type / Size / State (and other axes) that consumers can select  
-- Use live instances in strips/grids; prefer readable strips over full cross-product explosion when the contract separates axes—but **every contracted value must appear at least once**  
-- Label invalid combinations as restricted, not as missing examples  
-- Do not invent missing states; record gaps and route defects to `/ds-fix`  
-- Distinguish interaction / system / selection / content states when applicable  
-
-**Gate:** if any contracted variant value or state is undocumented → incomplete.
-
-## Variable usage examples (contextual)
-
-Do **not** ship a bare token dump as the only token section.
-
-For each major semantic role the component uses, show a **product-like mini layout** (form row, toolbar, card header, list item, etc.) where:
+Then show **1–3 contextual mini layouts** (form footer, toolbar, list row, etc.) where:
 
 - The component instance is live  
-- Callouts name the **exact semantic variable / text style / effect** on the relevant part  
+- Callouts name the exact semantic variable / style / effect on the relevant part  
 - Mode behavior (Light/Dark) is shown or noted  
-- Spacing/radius/type appear as used in composition, not as orphan swatches only  
+- Spacing/radius/type appear as used in composition—not orphan swatches only  
 
-A compact reference table may follow the visuals. Mark unverified bindings `Unverified`.
+A compact binding table may precede the visuals. Mark unverified bindings `Unverified`.
 
-**Gate:** contextual variable examples required for completion.
+**Gate:** scoped Styles & Variables + contextual examples required for completion.
+
+### Variants (complete coverage)
+
+Build from the **`CC-*` variant and state model** plus verified source support.
+
+- Include every contracted Type / Size / State (and other axes) consumers can select  
+- Prefer readable strips over full cross-product explosion when axes are separate—but **every contracted value must appear at least once**  
+- Label invalid combinations as restricted, not as missing examples  
+- Do not invent missing variants; record gaps and route defects to `/ds-fix`  
+- Interaction meaning belongs in **Behavior & interaction**, not only as unlabeled thumbnails  
+
+**Gate:** if any contracted variant value is undocumented → incomplete.
+
+### Callouts (inline only)
+
+Number callouts consistently; keep labels outside the instance. Place them in the section that owns the fact (e.g. token callouts in Styles & Variables, part numbers in Anatomy).
 
 ## Live instances rule
 
-All matrix, anatomy, playground, theme/RTL, and Do/Don't component examples must remain **instances of the source**. Never detach. Never edit source while documenting.
+All Variants, Anatomy, playground, Behavior, Composition, Usage, and Edge cases component examples must remain **instances of the source**. Never detach. Never edit source while documenting.
 
 ## Idempotency and placement
 
 Inspect existing docs first. Prefer:
 
 ```text
-Docs / [Component Name] / [Platform]
+Docs / Components / [Component Name] / [Platform]
 ```
 
-or the file’s established docs convention. Update in place. Cross-link sibling platforms when they exist.
+or the file’s established docs convention. **Update in place.** Cross-link sibling platforms when they exist. Never spawn a duplicate Overview for the same component × platform.
 
 ## Workflow
 
@@ -263,7 +310,7 @@ Confirm `CC-*`, platform component name, and sibling links.
 
 ### 2. Usage evidence
 
-Request screens or accept skip; produce a short Usage Evidence Summary before building Context.
+Request screens or accept skip; produce a short Usage Evidence Summary before building Composition.
 
 ### 3. Inspect source (read-only)
 
@@ -280,11 +327,11 @@ Record API, variants, states, bindings, nested dependencies, Auto Layout, themes
 | Deprecated | Explicitly marked for replacement |
 | Unknown | Insufficient evidence |
 
-Do not invent `Ready`. Do not mark `Ready` if contract is Draft/Blocked or matrix/tokens/annotations are incomplete.
+Do not invent `Ready`. Do not mark `Ready` if contract is Draft/Blocked or Styles & Variables / Variants / Usage are incomplete.
 
 ### 5. Build required sections
 
-Create/update Overview → Status in the order above. Keep English clear and concise.
+Create/update Overview → Status in the order above. Keep English clear and concise. Enforce anti-overlap rules.
 
 ### 6. Cross-references
 
@@ -297,16 +344,19 @@ In Status (and gaps), link the workflow:
 | `/ds-build` | Source construction |
 | `/ds-test` | QA / acceptance before or after docs |
 | `/ds-fix` | Repair source defects found while documenting |
+| `/ds-jira` | Plain-text parent + full-workflow subtasks for the board |
 
 ### 7. Quality checks
 
 - Source API unchanged; no detaches  
-- Full `CC-*` variants/states covered  
-- Contextual variable examples present  
-- Consumer annotations present for every required topic  
+- Full `CC-*` variants covered in **Variants**  
+- **Styles & Variables** scoped + contextual examples present  
+- **Usage** has Use for + Don’t use for  
+- **Composition** + **Edge cases** present (or explicit pending/gap)  
 - Exact property/token names; no primitive recommendations  
+- No duplicate facts across sections  
 - Platform docs for selected platform + sibling cross-links  
-- Light/Dark and EN/AR when supported  
+- Light/Dark and EN/AR covered where supported (flags in Overview; behavior in Behavior; long text in Edge cases)  
 - Usage evidence handled or explicitly skipped  
 - Original screens untouched  
 
@@ -345,9 +395,10 @@ Use `Usage evidence pending` when skipped.
 
 | Gate | Pass? | Notes |
 |---|---|---|
-| Full variants/states vs `CC-*` | | |
-| Contextual variable examples | | |
-| Consumer annotations (all topics) | | |
+| Styles & Variables (scoped + contextual) | | |
+| Variants vs `CC-*` | | |
+| Usage (Use for / Don’t use for) | | |
+| Composition + Edge cases | | |
 
 ### Contract drift
 
@@ -368,6 +419,7 @@ Exactly one of:
 - `/ds-test`  
 - `/ds-fix`  
 - `/ds-plan` (contract outdated)  
+- `/ds-jira` (board package for full workflow — optional)  
 - `Documentation complete`  
 
 ## Completion gate
@@ -377,11 +429,12 @@ Documentation is **complete only when all** are true:
 1. Target + reliable `CC-*` identified; drift recorded if any  
 2. Usage screens supplied **or** explicit source-only skip recorded  
 3. Source API unchanged; examples remain live instances (no detach)  
-4. **Full variants and states** from the contract are documented  
-5. **Contextual variable usage examples** exist (not token list only)  
-6. **Consumer annotations** cover purpose, use/not, anatomy, properties, states, sizing/platform, EN/AR RTL, tokens, a11y, do/don't—placed next to related examples  
-7. Required sections Overview through Status are present  
-8. Selected platform documented; siblings cross-linked when they exist  
-9. Status and gaps are honest; defects point to `/ds-fix`  
+4. **Styles & Variables** includes scoped bindings **and** contextual examples (not token list only)  
+5. **Variants** document every contracted value at least once  
+6. **Usage** includes Use for and Don’t use for  
+7. **Composition** and **Edge cases** are present (or explicitly pending/gapped)  
+8. Required sections Overview through Status are present with **no overlapping restatements**  
+9. Selected platform documented; siblings cross-linked when they exist  
+10. Status and gaps are honest; defects point to `/ds-fix`  
 
 If any of items **4–6** fail → result must be `Partially documented` (not complete).
