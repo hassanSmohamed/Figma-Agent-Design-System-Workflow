@@ -134,7 +134,7 @@ Capture before mutating docs:
 | Platforms | Web, Tablet, and/or Mobile as contracted |
 | Source | Frame, report, or excerpt |
 
-Intake must cover contract areas for: purpose, anatomy, public API, **full variant/state model**, content, sizing, platform, theme/RTL, a11y, foundations, acceptance criteria, open questions.
+Intake must cover contract areas for: purpose, anatomy, public API, **full variant/state model**, content, sizing, platform, **theme**, **Language**, **Direction**, a11y, foundations, acceptance criteria, open questions.
 
 If no reliable contract → `Blocked: missing component contract`.  
 If status is `Blocked` → do not publish final “approved” docs → `Blocked: component contract is Blocked`.
@@ -176,7 +176,7 @@ Confirm briefly; ask only for missing facts that change the docs.
 
 Prefer at least one primary use and one important edge/state when available; do not fabricate platforms or states.
 
-Per screen record: source, platform, flow, screen, location, role, variant/state, theme/direction, evidence quality (`Live frame` / `Snapshot` / `Screenshot` / `Inferred`), notes.
+Per screen record: source, platform, flow, screen, location, role, variant/state, theme, language, direction (separate), evidence quality (`Live frame` / `Snapshot` / `Screenshot` / `Inferred`), notes.
 
 ## Known foundation profile
 
@@ -201,7 +201,7 @@ Expect, then verify in file (for **binding references** on the component page—
 5. Visual examples before dense tables  
 6. Separate supported behavior from recommendations  
 7. Separate shared rules from platform differences  
-8. EN LTR + AR RTL; Light + Dark when supported  
+8. **Language** (EN + automatic AR stress examples) and **Direction** (LTR + RTL) as separate concerns; Light + Dark when supported — do not document them as one “EN LTR / AR RTL” blob only  
 9. A11y: design evidence vs `Implementation requirement` for runtime  
 10. Callouts sit **beside** examples inside the owning section—not a separate Annotations chapter  
 11. **Single ownership:** each fact lives in one section; other sections may link, never restate  
@@ -214,7 +214,7 @@ Expect, then verify in file (for **binding references** on the component page—
 | Token/style names + scope + contextual binding scenes | Styles & Variables |
 | Parts of one instance | Anatomy |
 | Selectable options / structural matrix | Variants |
-| Hover, focus, pressed, disabled, loading, RTL behavior, a11y behavior | Behavior & interaction |
+| Hover, focus, pressed, disabled, loading, Language behavior, Direction/RTL behavior, a11y behavior | Behavior & interaction |
 | Property API, defaults, sizing, nested deps | Detail specs |
 | Use for / Don’t use for + alternatives | Usage |
 | Layout with neighboring components | Composition |
@@ -233,11 +233,11 @@ Additional rules:
 
 Create or update these sections **in order**. Names may match file convention; content ownership must match.
 
-1. **Overview** — purpose, platforms, theme/direction support flags, contract ID/version, hero instance, sibling links. No full Use/Don’t list.  
+1. **Overview** — purpose, platforms, theme / Language / Direction support flags (separate), contract ID/version, hero instance, sibling links. No full Use/Don’t list.  
 2. **Styles & Variables** — scoped bindings for this component + contextual product-like examples (see below).  
 3. **Anatomy** — numbered callouts on a live instance + part table (required/optional).  
 4. **Variants** — complete matrix per `CC-*` (every contracted value ≥ once); restricted combos labeled.  
-5. **Behavior & interaction** — state meaning, pointer/keyboard, focus, loading/disabled rules, EN LTR vs AR RTL behavior, design-time a11y (contrast **WCAG 2.2 AA + APCA**, targets); runtime marked `Implementation requirement`.  
+5. **Behavior & interaction** — state meaning, pointer/keyboard, focus, loading/disabled rules, **Language** (EN vs AR Text Styles + stress examples) vs **Direction** (LTR vs RTL layout) as separate notes, design-time a11y (contrast **WCAG 2.2 AA + APCA**, targets); runtime marked `Implementation requirement`.  
 6. **Detail specs** — exact property names, defaults, safe combinations, Hug/Fill, targets, nested dependencies.  
 7. **Usage** — **Use for** / **Don’t use for** + preferred alternatives.  
 8. **Composition** — product-like layouts with siblings (form row, toolbar, dialog footer); spacing between components; or `Usage evidence pending`.  
@@ -314,7 +314,7 @@ Request screens or accept skip; produce a short Usage Evidence Summary before bu
 
 ### 3. Inspect source (read-only)
 
-Record API, variants, states, bindings, nested dependencies, Auto Layout, themes, RTL behavior, known defects. Do not edit source. Record contract drift explicitly.
+Record API, variants, states, bindings, nested dependencies, Auto Layout, themes, Language, Direction, known defects. Do not edit source. Record contract drift explicitly.
 
 ### 4. Set documentation status
 
@@ -365,10 +365,10 @@ In Status (and gaps), link the workflow:
 Document only what the contract and source support. Typical focuses:
 
 - **Button / Link:** type hierarchy, loading, icon-only, focus/disabled, visited (Link)  
-- **Button Group:** orientation, primary order, RTL order, wrapping  
+- **Button Group:** orientation, primary order, Direction/RTL order, wrapping  
 - **Input / Text Area:** label, helper/error, leading/trailing, read-only vs disabled, multiline  
 - **Avatar:** image/initials/fallback, sizes, status  
-- **Toggle / Checkbox / Radio:** meaning of states, groups, labels, RTL without reversing meaning  
+- **Toggle / Checkbox / Radio:** meaning of states, groups, labels, Direction without reversing meaning  
 - **Banner / Badge:** semantic types, dismiss/action, non-interactive defaults  
 - **Calendar / Table:** document the system (cells, headers, ranges, empty/loading, overflow), not only one sample  
 

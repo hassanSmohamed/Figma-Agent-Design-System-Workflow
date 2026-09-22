@@ -60,7 +60,7 @@ Button, Button Group, Input, Text Area, Avatar, Toggle, Checkbox, Radio Button, 
 ## Prerequisites
 
 1. Latest `/ds-review` for this component + platform in the conversation or file notes
-2. Review **Plan Handoff Package** consumed: locked foundations, pending `FP-*`, open policy questions, nested dependencies, RTL/i18n and a11y constraints
+2. Review **Plan Handoff Package** consumed: locked foundations, pending `FP-*`, open policy questions, nested dependencies, **Language** and **Direction** constraints (separate), and a11y constraints
 3. Clear target component or draft source
 4. No blocking unanswered foundation architecture failure (or user accepts risk)
 5. Review readiness is `Ready` or `Ready with gaps` — if `Blocked`, do not draft a `Ready to Build` contract
@@ -130,7 +130,20 @@ List invalid combinations explicitly.
 
 ### 5. Content contract
 
-Required/optional text and slots; wrapping/truncation; long EN; long AR; mixed-direction values; empty content. Do not invent product copy.
+Required/optional text and slots; wrapping/truncation; empty content; mixed-direction values.
+
+For **every** text role (Label, Helper, Error, Placeholder, Title, Body, etc.):
+
+| Role | EN example | AR example (automatic stress) | Notes |
+|---|---|---|---|
+
+Rules:
+
+- Do **not** invent product claims (numeral policy, date format, legal/product microcopy as facts)
+- **Do** supply automatic Arabic stress/default strings for every EN text role — this is layout/Text Style simulation, not finalized product translation
+- Prefer short/medium/long AR fixtures from the workflow stress glossary when product AR is unknown
+- Long EN and long AR must both be specified for stress
+- Language is content + Text Styles; do not solve localization with a Language variant
 
 ### 6. Sizing and responsive behavior
 
@@ -145,17 +158,32 @@ Always `Separate platform component` for this package.
 
 Document verified differences vs sibling platforms (anatomy, interaction, target size, hover/keyboard, placement). Do not plan a shared component “for now”.
 
-### 8. Theme, localization, and RTL contract
+### 8. Theme, Language, and Direction contract
 
-- Light / Dark via modes
-- Exact English Text Style names by role
-- Exact Arabic Text Style names by role
-- Direction-neutral Auto Layout; Start/End rules
-- Icon mirroring rules
-- Mixed-direction exceptions
+**Theme, Language, and Direction are three independent concerns.** Do not merge them into one “RTL/i18n” blob or assume Language ≡ Direction.
+
+#### 8a. Theme
+
+- Light / Dark via variable modes
+- No Theme variant axis
+
+#### 8b. Language
+
+- Exact English Text Style names by role (`Text/EN/…`)
+- Exact Arabic Text Style names by role (`Text/AR/…`)
+- EN + AR content per §5 (automatic AR stress required)
 - No English/Arabic duplicate component sets
+- No Language property unless anatomy truly requires it (default: never)
 
-RTL is part of Build later; the plan must fully define RTL expectations here.
+#### 8c. Direction
+
+- Direction-neutral Auto Layout; Start/End / Leading/Trailing rules
+- Icon mirroring rules (directional only)
+- Mixed-direction exceptions (email, URL, phone, OTP, IDs stay LTR)
+- Optional nested `Direction=LTR|RTL` only if anatomy requires it; prefer no Direction on the main set
+- Direction is layout, not language — do not encode “Arabic” as a Direction value
+
+Language and Direction construction both happen later inside `/ds-build` (Phase 6); the plan must fully define both here as separate subsections.
 
 ### 9. Accessibility contract
 
@@ -192,7 +220,7 @@ Contract cannot become `Ready to Build` while a required foundation is only `Pro
 
 ### 11. Acceptance criteria
 
-Observable pass/fail criteria for structure, API, tokens, themes, responsive/platform behavior, long EN/AR, RTL, a11y design (**WCAG 2.2 AA + APCA** on critical contrast pairs; shade/tint follow-up when examples are cited), dependencies, instance safety.
+Observable pass/fail criteria for structure, API, tokens, themes, responsive/platform behavior, long EN/AR, **Language** (EN + AR Text Styles + automatic AR stress), **Direction** (LTR/RTL logical layout), a11y design (**WCAG 2.2 AA + APCA** on critical contrast pairs; shade/tint follow-up when examples are cited), dependencies, instance safety.
 
 ### 12. Assumptions, open questions, decisions
 
@@ -231,7 +259,7 @@ Rules:
 
 - One row per consumer control, or per part×control that Build must implement
 - Cover **all** public controls from Table B (do not omit axes)
-- Include theme / RTL / language only as non-property rows when relevant (`Kind` = `mode` or `layout / style`) — never as variant axes
+- Include **Theme**, **Language**, and **Direction** only as separate non-property rows when relevant (`Kind` = `mode`, `content / style`, or `layout`) — never as variant axes and never as one combined “RTL/i18n” row
 - If nothing is missing for a row: `Missing Variable/Style?` = `No`, Solve = `—`, Blocks Ready? = `No`
 - If something is missing: cite exact Gap ID (`G-001`) and/or `FP-*`; Solve must match Table C literally
 - Respect variant explosion prevention — do not explode Theme × Language × Direction
@@ -445,7 +473,7 @@ Do not plan:
 Type × Size × State × Theme × Language × Direction × Icon × …
 ```
 
-Prefer: variants for type/size/state; text/boolean/instance-swap for content; modes for theme; logical layout for RTL.
+Prefer: variants for type/size/state; text/boolean/instance-swap for content; modes for theme; **Language** via content + Text Styles; **Direction** via logical layout (separate from Language).
 
 ## Contract persistence
 

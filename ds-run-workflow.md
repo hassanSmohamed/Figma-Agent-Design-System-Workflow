@@ -72,13 +72,45 @@ Sequence:
 4. **Hard stop for human approval**
    - `Approve CC-… Ready to Build`
    - plus `FP-*` / Table C Gap IDs when creates block Ready to Build
-5. `/ds-build` — consumes approved package; **executes Tables C–D**; includes EN LTR + AR RTL in the same build
+5. `/ds-build` — consumes approved package; **executes Tables C–D**; applies **Language** (EN + automatic AR stress copy + Text Styles) and **Direction** (LTR/RTL logical layout) as **separate** concerns in the same build
 6. `/ds-test`
 7. `/ds-fix` when Critical or Major findings exist
 8. `/ds-test` recheck after fixes
 9. `/ds-document` when requested or when the component is approved
 
-There is **no separate RTL phase**. RTL is part of Build.
+There is **no separate Language phase** and **no separate RTL/Direction phase**. Both are part of Build, but they must never be treated as one axis.
+
+## Package-wide: Language ≠ Direction
+
+Across every skill in this package, **Language** and **Direction** are independent:
+
+| Axis | What it is | Mechanism | Not allowed |
+|---|---|---|---|
+| **Language** | Content locale preview: English / Arabic | Content strings + approved `Text/EN/…` and `Text/AR/…` Text Styles | Language as a variant axis; EN/AR duplicate component sets; faking Arabic by right-aligning Inter |
+| **Direction** | Reading/layout direction: LTR / RTL | Direction-neutral Auto Layout; Leading/Trailing/Start/End; optional nested `Direction=LTR\|RTL` only if anatomy requires it | Direction as a Theme/Language mashup; assuming Language ≡ Direction in the public API |
+
+Rules every phase must respect:
+
+1. Do **not** conflate “Arabic” with “RTL” or “English” with “LTR” in property names, variant axes, intake labels, or acceptance wording.
+2. Primary product stress remains **EN + LTR** and **AR + RTL**, but Plan/Build/Test/Document must name **Language** and **Direction** as separate contract fields and evidence columns.
+3. Theme (Light/Dark), Language (EN/AR), and Direction (LTR/RTL) are three independent non-axes — never explode `Theme × Language × Direction` variants.
+4. Intake and reports use separate labels: `Theme`, `Language`, `Direction` — not `theme/RTL` or `language/direction` as a single blob.
+5. Review Plan Handoff, Plan §8, Build Phase 6, Test §9, Fix, and Document must all split Language vs Direction.
+
+## Package-wide: Automatic Arabic copy
+
+Every full-workflow run **must** supply Arabic stress/default strings for every contracted text role. This is **content simulation for layout and Text Style stress**, not product localization policy.
+
+| Rule | Detail |
+|---|---|
+| Who produces it | `/ds-plan` §5 lists EN + AR example strings per text role; `/ds-build` applies them automatically in Phase 6 |
+| Source of strings | Prefer Plan §5 AR examples; if Plan omitted a role, Build fills from the shared stress glossary (Build Appendix A) — do not leave AR empty |
+| What is allowed | Automatic AR stress/default strings for Label, Helper, Error, Placeholder, Title, Body, and any other contracted text role |
+| What is forbidden | Inventing numeral policy, date format, legal/product microcopy, or claiming AR strings are finalized product translation |
+| Text Styles | Every AR stress string uses the exact approved `Text/AR/…` style for that role + platform |
+| Test / Document | Fail or gap if a contracted text role has EN but no AR stress; docs show AR examples as stress, not as locked product copy |
+
+Underlying skills implement these rules; the orchestrator must not weaken them.
 
 ### 2. Review-first workflow
 
@@ -242,6 +274,16 @@ Include `CC-*`, `FP-*`, Table C Gap IDs (`G-*`), Table E Block IDs when relevant
 | Area | Summary | Severity or impact | Action taken |
 |---|---|---|---|
 
+When Build/Test/Document ran, include Language and Direction as **separate** rows when relevant (do not merge into one “RTL/i18n” blob).
+
+### Language / Direction / Theme coverage (full workflow)
+
+| Axis | Verified? | Evidence summary |
+|---|---|---|
+| Theme (Light / Dark) | | |
+| Language (EN + automatic AR stress copy + Text Styles) | | |
+| Direction (LTR + RTL logical layout) | | |
+
 ### Final Recommendation
 
 Return exactly one best next step, such as:
@@ -271,4 +313,6 @@ Complete only when:
 - Plan → Build handoff included Tables C–D (or explicit `None`) when Build ran
 - No blocked phase was silently skipped
 - When full workflow ran, `/ds-jira` ran at kickoff or was explicitly skipped
+- When Build/Test ran: Language and Direction were verified as **separate** axes (not only as “EN LTR + AR RTL” wording)
+- When Build ran: automatic Arabic stress copy was applied for every contracted text role (Plan §5 or Build glossary)
 - Final report states what ran, what changed, what is blocked, and what happens next

@@ -77,7 +77,7 @@ A shallow review is a failed review. Do **not**:
 - Collapse Light/Dark into component variants in recommendations
 - Recommend primitive bindings on production layers when semantic tokens exist or should exist
 - Recommend direct typography-variable binding on text nodes when an approved Text Style path exists
-- Skip Arabic Text Styles, RTL readiness signals, or nested dependency tokens
+- Skip Arabic Text Styles, automatic AR stress readiness, Direction/RTL readiness signals, or nested dependency tokens
 - Mark Effect Styles as Covered without checking real geometry in the file
 - Mark `Ready` while any **Blocking** gap remains unresolved or unapproved
 - Dump generic advice instead of a coverage decision for this component
@@ -235,8 +235,9 @@ Always cover these need groups:
 11. **Grid / Layout Styles** — layout guides/modes if this component depends on them
 12. **Paint / Color Styles** — only if the file still uses shared paint styles for fills/strokes
 13. **Nested dependencies** — icon, spinner, badge, avatar, etc.
-14. **RTL signals** — logical start/end patterns, AR Text Styles, mirroring expectations
-15. **A11y design evidence needs** — focus visible, target size, contrast pairs (plan for **WCAG 2.2 AA + APCA additional confirmation**), non-color state; note any component-set examples whose shade/tint steps already pass or fail
+14. **Language signals** — AR Text Styles for needed roles; automatic AR stress expectation (content + styles, not a Language variant)
+15. **Direction / RTL signals** — logical start/end patterns, mirroring expectations (separate from Language)
+16. **A11y design evidence needs** — focus visible, target size, contrast pairs (plan for **WCAG 2.2 AA + APCA additional confirmation**), non-color state; note any component-set examples whose shade/tint steps already pass or fail
 
 Extend with component-family extras (see below). Do not skip a group by saying “N/A” without a one-line reason.
 
@@ -342,16 +343,22 @@ Record siblings and dependencies:
 - Documentation frames tied to the component
 - Binding health if an existing draft is selected (bound vs raw)
 
-### G. RTL readiness signal (read-only)
+### G. Language and Direction readiness signals (read-only)
 
 Report whether:
 
+**Language**
+
 - Arabic Text Styles exist for needed roles
+- Any anti-pattern suggests EN/AR duplicate component sets
+- Automatic AR stress content can be applied later (styles exist; no Language variant required)
+
+**Direction**
+
 - Logical naming / direction-neutral patterns are visible in existing components
 - Icon mirroring conventions exist
-- Any anti-pattern suggests EN/AR duplicate component sets
 
-Do not mutate. RTL construction happens later inside `/ds-build`. Plan still needs these signals.
+Do not mutate. Language and Direction construction happen later inside `/ds-build` as **separate** Phase 6 concerns. Plan still needs both signals.
 
 ### H. Consistency and convention extraction
 
@@ -598,7 +605,8 @@ This section is mandatory. `/ds-plan` should be able to start from it.
 | Open policy questions | Convention conflicts Plan must resolve as `OQ-*` |
 | Nested dependencies | Approved components that must be instances |
 | Platform deltas to investigate | Known differences vs sibling platforms |
-| RTL / i18n constraints | Signals Plan must encode in the contract |
+| Language constraints | EN/AR Text Styles + automatic AR stress; no Language property; no EN/AR duplicate sets |
+| Direction / RTL constraints | Start/End, icon mirroring, mixed-direction rules — separate from Language |
 | A11y design constraints | Focus, target size, contrast pairs already evidenced (**WCAG + APCA** when measured); shade/tint steps from set examples that pass both |
 | Out of scope for Plan | Items deferred or architecture-blocked |
 | Suggested contract ID | `CC-{COMPONENT}-{PLATFORM}-001` if clear |
@@ -723,8 +731,9 @@ All other checked needs: OK (see Component Coverage Matrix).
 | N-11 | Grid / Layout Styles | No | Button does not own page grid |
 | N-12 | Paint / Color Styles | No | Paints use semantic color variables |
 | N-13 | Nested dependencies | Yes | Icon component instance for icon slots |
-| N-14 | RTL signals | Yes | Start/End padding and icon order for Arabic |
-| N-15 | A11y design | Yes | Visible focus, contrast, min target size on Web |
+| N-14 | Language signals | Yes | AR Label Text Style + automatic AR stress for label role |
+| N-15 | Direction / RTL signals | Yes | Start/End padding and icon order (separate from Language) |
+| N-16 | A11y design | Yes | Visible focus, contrast, min target size on Web |
 
 ### Variables Inventory
 
@@ -763,8 +772,9 @@ All other checked needs: OK (see Component Coverage Matrix).
 | N-11 | Page grid | Grid Styles not needed on Button | grid style | — | N/A | — | — |
 | N-12 | Paint style fill | Paint Styles not used | paint style | — | N/A | — | — |
 | N-13 | Icon nested | `Icon / Web` | component | — | Covered | — | — |
-| N-14 | RTL patterns | Seen on `Link / Web` (Auto Layout Start/End) | convention | — | Covered | — | — |
-| N-15 | Min target size | No shared size token for 40px Web min | — | — | Partial | Minor | F-003 |
+| N-14 | Language / AR styles | `Text/AR/Label/Medium` + auto AR stress expected | text style | Desktop/Tablet/Mobile | Covered | — | — |
+| N-15 | Direction / RTL patterns | Seen on `Link / Web` (Auto Layout Start/End) | convention | — | Covered | — | — |
+| N-16 | Min target size | No shared size token for 40px Web min | — | — | Partial | Minor | F-003 |
 
 ### Findings
 
@@ -789,7 +799,7 @@ All other checked needs: OK (see Component Coverage Matrix).
 - Scopes: Stroke color, and frame stroke if needed
 - Modes: Light, Dark
 - Values: alias to existing focus primitives if present; if not, stop and ask before inventing primitives
-- Rationale: Every Button state needs a visible focus ring for Web keyboard users (Need N-03 / N-14)
+- Rationale: Every Button state needs a visible focus ring for Web keyboard users (Need N-03 / N-16)
 - Affected components: Button, Input, Checkbox, Radio, Link, and other focusable controls
 - Alternative considered: reuse `color/border/button/primary` — rejected because border role is not focus role
 - Risk: Medium
@@ -812,7 +822,8 @@ All other checked needs: OK (see Component Coverage Matrix).
 |---|---|---|---|---|
 | State axis | `State=Default, Hover, Focus, Pressed, Disabled` | Link / Web + Button draft | Reuse same State names | Verified convention |
 | Theme | Light/Dark via variable modes | `Color/Semantic` | No theme property on Button | Verified convention |
-| Language | One component; EN/AR via Text Styles + content | Text style libraries | No language property | Verified convention |
+| Language | One component; EN/AR via Text Styles + automatic AR stress content | Text style libraries | No language property | Verified convention |
+| Direction | Logical Start/End; nested Direction only if required | `Link / Web` patterns | No Direction≡Language mashup | Verified convention |
 | Text Style path | Text node → Text Style → type variables | EN/AR Label styles | Plan must name exact Text Styles | Verified convention |
 | Paint vs variable | Button paints use semantic color variables | No paint style on Button draft fills | Do not introduce paint styles for Button fills | Verified convention |
 | Effect Style use | Shared shadows live as Effect Styles; Button is flat | `Shadow/sm`, `Shadow/md` exist | Leave effects out of Button contract | Verified convention |
@@ -829,7 +840,8 @@ All other checked needs: OK (see Component Coverage Matrix).
 | Open policy questions | Confirm size scale `sm/md/lg` and Web min height 40px (F-003); confirm Dark value for primary pressed (F-001) |
 | Nested dependencies | `Icon / Web` must be an instance (not flattened vectors) |
 | Platform deltas to investigate | Tablet/Mobile not built; Plan only for Web now; do not share one component across platforms |
-| RTL / i18n constraints | Use Start/End padding; icon swaps side with direction; AR label style for Arabic text; no EN/AR duplicate Button sets |
+| Language constraints | AR label style for Arabic text; automatic AR stress for label; no Language property; no EN/AR duplicate Button sets |
+| Direction / RTL constraints | Use Start/End padding; icon swaps side with direction — separate from Language |
 | A11y design constraints | Visible focus required; contrast must hold on primary/destructive in Light and Dark via **WCAG 2.2 AA + APCA**; Web min target about 40px; prefer shade/tint steps from set examples that already pass both |
 | Out of scope for Plan | Button / Tablet, Button / Mobile, shadow elevation |
 | Suggested contract ID | `CC-BUTTON-WEB-001` |

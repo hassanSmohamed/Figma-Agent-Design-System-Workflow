@@ -1,6 +1,6 @@
 ---
 name: ds-build
-description: Deep mutating build of one foundation component for one platform in the active Figma design-system file. Consumes an approved CC-* contract plus Plan Package A–E — especially Table C (Variables/Styles solves) and Table D (nested configs) — then constructs Auto Layout, semantic bindings, Text Styles, theme modes, and RTL-ready structure. Use only after /ds-plan is human-approved Ready to Build.
+description: Deep mutating build of one foundation component for one platform in the active Figma design-system file. Consumes an approved CC-* contract plus Plan Package A–E — especially Table C (Variables/Styles solves) and Table D (nested configs) — then constructs Auto Layout, semantic bindings, Text Styles, theme modes, Language (EN + automatic AR stress copy), and Direction (LTR/RTL) as separate concerns. Use only after /ds-plan is human-approved Ready to Build.
 ---
 
 # Design System Build
@@ -20,8 +20,8 @@ This Skill must answer, with evidence from the live file **and** the approved Pl
 1. Was the approved `CC-*` + extras A–E intact and authorized for mutation?
 2. Were Tables **C** and **D** executed (or legitimately `None`) before / during construction?
 3. Does the built set match wireframe A, controls B, token map §10, and platform rules?
-4. Are Variables, Text Styles, nested instances, Auto Layout, theme, and RTL compliant?
-5. Did self-check pass for EN LTR + AR RTL × Light + Dark on this platform?
+4. Are Variables, Text Styles, nested instances, Auto Layout, theme, Language, and Direction compliant (Language ≠ Direction)?
+5. Did self-check pass for Language (EN + AR stress) and Direction (LTR + RTL) × Light + Dark on this platform?
 6. What exact handoff can `/ds-test` trust?
 
 The build must be:
@@ -30,7 +30,8 @@ The build must be:
 - Assigned approved Text Styles (not raw typography)
 - Auto Layout clean and pixel-stable
 - Theme-ready (Light / Dark via modes)
-- RTL-ready (Arabic + English in one set — no EN/AR duplicates)
+- Language-ready (EN + automatic AR stress copy + Text Styles in one set — no EN/AR duplicates)
+- Direction-ready (LTR + RTL via logical layout — separate from Language)
 - Nested-component safe
 - Traceable to an approved `CC-*` from `/ds-plan`
 - Executable from Plan Package extras — especially **Table C** and **Table D**
@@ -91,7 +92,8 @@ A shallow build is a failed build. Do **not**:
 - Duplicate the set for EN vs AR
 - Flatten nested dependencies that Table D requires as instances
 - Detach instances to restyle
-- Mark Ready for Test while overlap, clipping, raw fills, or failed RTL/theme self-check remain
+- Mark Ready for Test while overlap, clipping, raw fills, or failed Language / Direction / theme self-check remain
+- Mark Ready for Test when a contracted text role has EN but no automatic AR stress copy
 - Mark Ready for Test when required contrast pairs pass WCAG but fail APCA (or the reverse) without logging and resolving
 - Copy failing colors from a component-set example instead of following a passing shade/tint step
 - Silently change the public API
@@ -191,7 +193,7 @@ Also approve Plan Table C solves for Gap IDs G-001, G-002.
 | `/ds-document` | Specs/usage after the component is stable |
 | `/ds-foundation-architecture-review` | When base Variable/Style structure is unsafe |
 
-RTL is **part of this build**. Do not treat RTL as a separate later skill.
+Language and Direction are **part of this build** as **separate** concerns. Do not treat either as a later skill, and do not merge them into one “RTL” pass.
 
 ---
 
@@ -231,7 +233,7 @@ If the in-file contract frame exists but Plan extras C–D are only in the conve
 5. Content contract  
 6. Sizing and responsive behavior  
 7. Platform contract  
-8. Theme, localization, and RTL contract  
+8. Theme, Language, and Direction contract (separate subsections)  
 9. Accessibility contract  
 10. Foundation and token map  
 11. Acceptance criteria  
@@ -450,8 +452,8 @@ Do **not** build: `Type × Size × State × Theme × Language × Direction × Ic
 | Type / Size / State | Variants when needed (per Table B) |
 | Label / content | Text / Boolean / instance-swap |
 | Theme | Variable modes |
-| EN / AR | Content + Text Styles |
-| RTL | Logical layout (+ nested Direction only if required) |
+| EN / AR | Content + Text Styles (**automatic AR stress** required) |
+| Direction (LTR / RTL) | Logical layout (+ nested Direction only if required) |
 | Platform | Separate `{Component} / {Platform}` sets |
 
 ### Instance-safety rules (updates and migrations)
@@ -526,14 +528,26 @@ Follow this order unless the contract forbids it. Do not bind tokens before the 
 4. Remove raw values and local type overrides  
 5. Fill Foundations + Compliance tables with exact names  
 
-### Phase 6 — RTL and content stress inside the same set
+### Phase 6 — Language and Direction inside the same set (separate)
 
-1. Apply section 8 direction architecture (prefer direction-neutral)  
-2. Configure leading/trailing / Start/End behavior  
-3. Apply AR Text Styles on Arabic stress content  
-4. Handle mixed-direction exceptions without reversing characters  
-5. Record RTL Implementation + icon/mixed-direction decisions  
+Language ≠ Direction. Run both sub-phases; do not merge evidence into one “RTL” cell.
 
+#### 6a. Language (content + Text Styles)
+
+1. For every contracted text role, apply EN example from Plan §5  
+2. **Automatically** apply AR stress/default strings for the same roles (Plan §5 AR column; if missing, use Appendix A glossary)  
+3. Assign exact `Text/EN/…` and `Text/AR/…` styles by role + platform  
+4. Record Language Implementation (roles covered, AR source: Plan vs glossary)  
+
+#### 6b. Direction (layout)
+
+1. Apply section 8c direction architecture (prefer direction-neutral)  
+2. Configure Leading/Trailing / Start/End behavior  
+3. Handle mixed-direction exceptions without reversing characters  
+4. Mirror directional icons only  
+5. Record Direction Implementation + icon/mixed-direction decisions  
+
+Primary stress pairing remains EN+LTR and AR+RTL, but report Language and Direction as separate tables.
 ### Phase 7 — Accessibility design implementation
 
 Implement **design-level** §9 only (do not claim runtime ARIA):
@@ -608,11 +622,20 @@ Apply the matching row in addition to the contract:
 
 ---
 
-## RTL as part of build (mandatory)
+## Language and Direction as part of build (mandatory)
 
-RTL is not a horizontal flip. Apply during build (Phase 6), not as a follow-up pass. Follow section 8.
+Language and Direction are not the same axis. Apply both during build (Phase 6), not as a follow-up pass. Follow section 8 (8b Language, 8c Direction).
 
-### Principles
+### Language principles
+
+1. English → Inter Text Styles; Arabic → IBM Plex Sans Arabic Text Styles  
+2. Never duplicate the full set for Arabic  
+3. **No Language variants** solely for localization  
+4. **Automatic Arabic copy:** for every contracted text role, Build must place AR stress/default strings (Plan §5 or Appendix A glossary) — this is content simulation, not product translation  
+5. Do **not** invent numeral policy, date format, or legal/product microcopy as product facts  
+6. Never fake Arabic by only right-aligning Inter  
+
+### Direction principles
 
 1. Logical meaning: Leading, Trailing, Start, End  
 2. Mirror reading order when appropriate  
@@ -620,10 +643,8 @@ RTL is not a horizontal flip. Apply during build (Phase 6), not as a follow-up p
 4. Preserve non-directional symbols  
 5. Preserve On/Off, Selected/Unselected, Previous/Next, Primary/Secondary meaning  
 6. Keep inherently LTR values LTR (email, URL, phone, OTP, IDs, paths, versions, etc.)  
-7. Arabic typography = IBM Plex Sans Arabic styles  
-8. Never duplicate the full set for Arabic  
-9. Avoid Direction on every variant combination  
-10. Do not invent Arabic copy, numeral policy, or date format as product facts  
+7. Avoid Direction on every variant combination  
+8. Do not encode Language as a Direction value (no “Arabic” direction property)  
 
 ### Preferred direction architecture
 
@@ -631,18 +652,18 @@ RTL is not a horizontal flip. Apply during build (Phase 6), not as a follow-up p
 2. **Directional nested subcomponent** — `Direction=LTR|RTL` only where order must change  
 3. **Direction on main component** — last resort  
 
-### Component-specific RTL notes
+### Component-specific Direction notes
 
 - **Button / Link:** leading at reading start; trailing at end; mirror directional arrows only  
 - **Button Group:** do not reverse actions blindly; preserve primary/destructive hierarchy  
-- **Input / Text Area:** RTL labels/helper/error; keep mixed values LTR when appropriate; do not reverse prefix/suffix semantics  
+- **Input / Text Area:** RTL labels/helper/error when Direction is RTL; keep mixed values LTR when appropriate; do not reverse prefix/suffix semantics  
 - **Avatar / Badge:** usually direction-neutral; do not mirror images, logos, status glyphs  
 - **Toggle / Checkbox / Radio:** do not invert state meaning; place control + label by reading direction  
 - **Calendar:** mirror month nav arrows; do not reverse digits in cells; preserve range-start/end meaning  
 - **Table:** preserve semantic column roles; do not blindly reverse selection/identity/action columns  
 - **Banner:** status → title → body → actions → dismiss in logical order  
 
-See **Appendix A** for icon mirror lists and mixed-direction rules.
+See **Appendix A** for icon mirror lists, mixed-direction rules, and the automatic Arabic stress glossary.
 
 ---
 
@@ -666,7 +687,8 @@ See **Appendix A** for icon mirror lists and mixed-direction rules.
 | Effect / Grid styles | | | |
 | Table C targets in file | | | |
 | Table D nested targets | | | |
-| RTL reference patterns | | | |
+| Language stress glossary / Plan §5 AR | | | |
+| Direction / RTL reference patterns | | | |
 | A11y focus/target patterns | | | |
 | Docs / contract frame | | | |
 
@@ -679,7 +701,7 @@ See **Appendix A** for icon mirror lists and mixed-direction rules.
 3. No accidental overlap or clipping  
 4. No absolute positioning to hide layout mistakes  
 5. Intentional Hug / Fill / Fixed only  
-6. Recheck after LTR and RTL content  
+6. Recheck after LTR and RTL **Direction**, and after EN and AR **Language** stress  
 7. Long content per §5 does not crush type or overflow clipped without contract rule  
 
 Hard stop: not Ready for Test while overlap, clipping, or inconsistent sizing remains.
@@ -688,12 +710,16 @@ Hard stop: not Ready for Test while overlap, clipping, or inconsistent sizing re
 
 ## Self-check matrix (required)
 
+Language and Direction are separate columns of evidence. Primary stress uses EN+LTR and AR+RTL; do not collapse them into one “EN LTR / AR RTL” pass cell without naming both axes.
+
 | Scenario | Required | Evidence to cite |
 |---|---|---|
-| English LTR + Light | Pass | Variant/property path + mode |
-| English LTR + Dark | Pass | Same |
-| Arabic RTL + Light | Pass | AR Text Style + direction mechanism |
-| Arabic RTL + Dark | Pass | Same |
+| English content + LTR + Light | Pass | EN Text Style + LTR direction mechanism + mode |
+| English content + LTR + Dark | Pass | Same |
+| Arabic content (auto stress) + RTL + Light | Pass | AR Text Style + AR string source (Plan/glossary) + RTL mechanism |
+| Arabic content (auto stress) + RTL + Dark | Pass | Same |
+| Language coverage | Pass | Every contracted text role has EN + automatic AR stress |
+| Direction coverage | Pass | LTR and RTL layout verified independently of which language string is shown |
 | Platform width / density | Pass | Frame width or size variant |
 | Long English + long Arabic | Pass | Content examples used |
 | Mixed-direction values (if allowed) | Pass | Example + isolation approach |
@@ -707,6 +733,7 @@ Hard stop: not Ready for Test while overlap, clipping, or inconsistent sizing re
 | Public API matches Table B | Pass | Property list |
 | No overlap / clip / unstable sizing | Pass | Visual/layout check |
 | No EN/AR duplicate sets | Pass | File search |
+| No Language≡Direction property mashup | Pass | Public API inspection |
 
 Status may move to `Built` only after this matrix passes.
 
@@ -729,8 +756,10 @@ Report **Ready for Test** only when:
 - Variables + Text Styles compliance not Blocked / Mixed on required layers  
 - Nested reuse gate passed  
 - Auto Layout / pixel gate passed  
-- LTR + RTL and Light + Dark self-check passed  
+- Language (EN + automatic AR stress) and Direction (LTR + RTL) self-check passed independently  
+- Light + Dark self-check passed  
 - No full EN/AR duplicate sets  
+- No Language≡Direction conflation in the public API  
 - Public API matches contract + Table B  
 - Accessibility design items from §9 that are buildable in Figma are present  
 - Critical contrast pairs confirmed with **WCAG 2.2 AA and APCA**; conflicts resolved or explicitly Blocked  
@@ -785,8 +814,9 @@ Otherwise readiness is `Draft` or `Blocked`.
 | Variants | Axes actually built | §4 / Table B | No Theme / Language / Direction unless contracted |
 | Nested | Instance targets + configs | Table D | Or `None` |
 | Tokens / Styles | Key binds (summary) | §10 / Table C | Detail in Foundations |
-| Theme | Light / Dark via modes | §8 | |
-| RTL | Mechanism used | §8 | Same set; no EN/AR duplicate |
+| Theme | Light / Dark via modes | §8a | |
+| Language | EN + automatic AR stress + Text Styles | §8b / §5 | Same set; no EN/AR duplicate |
+| Direction | Mechanism used | §8c | Separate from Language |
 | Contrast | Critical pairs disposition | §9 | WCAG + APCA |
 | Example follow-up | Shade/tint action or `None` | User example / set | |
 | Readiness | `Draft` / `Ready for Test` / `Blocked` | Self-check | |
@@ -868,7 +898,12 @@ If Table D was `None`, write one row: `None — no nested deps`.
 
 Status values only: `Verified convention`, `Unresolved policy`, `Mixed evidence`, `Not applicable`, `Blocked`.
 
-### RTL Implementation
+### Language Implementation
+
+| Text role | EN example | AR stress (auto) | AR source (Plan §5 / glossary) | EN Text Style | AR Text Style |
+|---|---|---|---|---|---|
+
+### Direction Implementation
 
 | Area | LTR | RTL | Mechanism |
 |---|---|---|---|
@@ -983,8 +1018,9 @@ Also approve foundation proposals FP-001.
 | Variants | Size × Hierarchy × State | §4 / Table B | No Theme / Language / Direction axes |
 | Nested | `Icon / Web` (leading/trailing) | Table D | Instance-swap, not flattened |
 | Tokens / Styles | Primary bg/text/icon + focus ring; EN/AR Label Medium | §10 + Table C | `color/focus/ring` from FP-001 |
-| Theme | Light / Dark via variable modes | §8 | Modes, not variants |
-| RTL | Start/End + icon order flip | §8 | Same set; no EN/AR duplicate |
+| Theme | Light / Dark via variable modes | §8a | Modes, not variants |
+| Language | EN label + automatic AR stress + Text Styles | §8b / §5 | Same set; glossary AR applied |
+| Direction | Start/End + icon order flip | §8c | Separate from Language |
 | Contrast | Primary label on primary fill | §9 | WCAG + APCA **Pass both** (Light & Dark) |
 | Example follow-up | None | — | No set example supplied |
 | Readiness | Ready for Test | Self-check | All required scenarios Pass |
@@ -1011,7 +1047,8 @@ Also approve foundation proposals FP-001.
 | Focus var | Yes | Missing before; FP-001 approved | Create first |
 | Text Styles | Yes | `Text/EN/Label/Medium`, `Text/AR/Label/Medium` | OK |
 | Nested | Yes | `Icon / Web` | OK for Table D |
-| RTL patterns | Yes | `Link / Web` Start/End AL | Reuse pattern |
+| RTL patterns | Yes | `Link / Web` Start/End AL | Reuse Direction pattern |
+| Language AR styles | Yes | `Text/AR/Label/Medium` | Auto AR stress OK |
 | Contract frame | Yes | `CC-BUTTON-WEB-001` on Components / Web | Update after pass |
 
 ### Plan Package Intake
@@ -1066,12 +1103,17 @@ Also approve foundation proposals FP-001.
 | Type | EN/AR Label Medium styles | Assigned; no local overrides | Verified convention | — |
 | Theme | Modes not variants | No Theme property | Verified convention | — |
 
-### RTL Implementation (excerpt)
+### Language Implementation (excerpt)
+
+| Text role | EN example | AR stress (auto) | AR source | EN Text Style | AR Text Style |
+|---|---|---|---|---|---|
+| Label | `Button` | `حفظ` | Glossary (Appendix A) | `Text/EN/Label/Medium` | `Text/AR/Label/Medium` |
+
+### Direction Implementation (excerpt)
 
 | Area | LTR | RTL | Mechanism |
 |---|---|---|---|
 | Icon + label order | Leading → Label → Trailing | Trailing ← Label ← Leading | Direction-neutral AL + Start/End |
-| Label style | `Text/EN/Label/Medium` | `Text/AR/Label/Medium` | Content + Text Style |
 | Chevron (if used) | Points forward | Mirrored | Directional icon only |
 
 ### Accessibility Design Implemented (excerpt)
@@ -1098,10 +1140,12 @@ Also approve foundation proposals FP-001.
 
 | Scenario | Pass/Fail | Evidence |
 |---|---|---|
-| EN LTR Light | Pass | primary/md/default + Light |
-| EN LTR Dark | Pass | primary/md/default + Dark |
-| AR RTL Light | Pass | AR label + Start/End AL |
-| AR RTL Dark | Pass | Same + Dark |
+| EN content + LTR + Light | Pass | primary/md/default + Light + EN style |
+| EN content + LTR + Dark | Pass | Same + Dark |
+| AR auto stress + RTL + Light | Pass | glossary AR + AR style + Start/End AL |
+| AR auto stress + RTL + Dark | Pass | Same + Dark |
+| Language coverage | Pass | Label EN+AR present |
+| Direction coverage | Pass | LTR and RTL layout verified |
 | Long AR | Pass | `متابعة وإرسال الطلب للمراجعة` |
 | Focus | Pass | focus state + `color/focus/ring` |
 | WCAG + APCA contrast | Pass | See contrast table — Pass both |
@@ -1142,9 +1186,29 @@ Also approve foundation proposals FP-001.
 
 ---
 
-## Appendix A — RTL reference
+## Appendix A — Language stress glossary + Direction reference
 
-### Logical naming
+### Automatic Arabic stress glossary (required when Plan §5 omits a role)
+
+Use these as **automatic stress/default** strings. They are layout and Text Style simulation — not finalized product translation.
+
+| Role / test | Example |
+|---|---|
+| Short AR label | `حفظ` |
+| Medium AR label | `حفظ التغييرات` |
+| Long AR label | `متابعة وإرسال الطلب للمراجعة` |
+| Helper AR | `يمكنك تعديل هذه المعلومات لاحقًا.` |
+| Error AR | `هذا الحقل مطلوب. أدخل قيمة صحيحة.` |
+| Placeholder AR | `أدخل النص هنا` |
+| Title AR | `تأكيد الطلب` |
+| Body AR | `راجع التفاصيل قبل المتابعة.` |
+| Mixed | `رقم الطلب هو BW-2026-1048` |
+| Email (stays LTR) | `hassan@example.com` |
+| Phone (stays LTR) | `+20 100 000 0000` |
+
+Build must apply an AR string for **every** contracted text role. Prefer Plan §5; fall back to this glossary by role.
+
+### Logical naming (Direction)
 
 Prefer: `Leading`, `Trailing`, `Start`, `End`, `Label`, `Helper`, `Error`, `Dismiss`.  
 Avoid baking `Left` / `Right` into public API names unless the contract requires physical direction.
@@ -1181,19 +1245,6 @@ Surrounding UI may be RTL while the value stays LTR:
 - Dates when product format is explicitly LTR  
 - Numbers with Latin units  
 
-Do not reverse character order. Isolate LTR content when needed. Keep Arabic labels, helpers, and errors in Arabic styles with RTL paragraph direction.
+Do not reverse character order. Isolate LTR content when needed. Keep Arabic labels, helpers, and errors in Arabic styles; Direction (paragraph/layout) is configured separately from Language (string + Text Style).
 
-### Stress examples (use during self-check)
-
-| Test | Example |
-|---|---|
-| Short AR | `حفظ` |
-| Medium AR | `حفظ التغييرات` |
-| Long AR | `متابعة وإرسال الطلب للمراجعة` |
-| Helper AR | `يمكنك تعديل هذه المعلومات لاحقًا.` |
-| Error AR | `هذا الحقل مطلوب. أدخل قيمة صحيحة.` |
-| Mixed | `رقم الطلب هو BW-2026-1048` |
-| Email | `hassan@example.com` |
-| Phone | `+20 100 000 0000` |
-
-Always re-check comparable English LTR after RTL work so LTR did not regress.
+Always re-check comparable English + LTR after Direction work so LTR did not regress.

@@ -309,6 +309,7 @@ Check:
 - Theme values are not duplicated as component variants
 - Platform modes are used only where values genuinely change by platform
 - Language modes are not used as a replacement for applying approved Text Styles unless the system explicitly requires content simulation
+- Language and Direction must remain independent axes — never combine into modes like `Dark Mobile Arabic` or treat Arabic as a Direction mode
 - Mode inheritance and overrides are predictable
 - Nested frames or components do not create accidental mode conflicts
 - The mode model can scale without combinatorial explosion
@@ -433,6 +434,8 @@ For every Text Style, inspect:
 Verify:
 
 - English and Arabic styles use the correct approved font families
+- Language is encoded in Text Style naming/assignment, not as a Direction or Theme mode
+- Direction (LTR/RTL layout) is not solved by inventing Language modes
 - Desktop, Tablet, and Mobile responsibilities are clear
 - The Text Style is assigned directly to component text nodes
 - Font family, weight, size, line height, and letter spacing are not reconstructed locally when an approved style exists

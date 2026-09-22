@@ -130,7 +130,7 @@ Write the component contract and plan package. Done when CC-* plan is ready for 
 Human approval to build. Done when Approve CC-* Ready to Build is given.
 
 4. Build {Component} / {Platform}
-Build the {Component} source in Figma from the approved plan. Done when build is complete for {Platform}, including EN and AR.
+Build the {Component} source in Figma from the approved plan. Done when build is complete for {Platform}, including Language (EN + automatic AR stress) and Direction (LTR + RTL) as separate concerns.
 
 5. Test {Component} / {Platform}
 QA the built {Component}. Done when test report has no Critical or Major issues (or issues are listed for fix).

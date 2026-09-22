@@ -60,7 +60,7 @@ Accepted sources, in priority:
 
 Capture before mutation: Contract ID, version, status, scope, platform (must match), source.
 
-Required intake: public API, variant/state model, content, sizing/responsive, platform rules, theme/LTR-RTL, accessibility, foundation map, acceptance criteria, open questions.
+Required intake: public API, variant/state model, content, sizing/responsive, platform rules, theme, Language, Direction, accessibility, foundation map, acceptance criteria, open questions.
 
 Gates:
 
@@ -140,7 +140,7 @@ Potentially breaking:
 - Delete a nested dependency
 - Change boolean-state meaning or documented action order
 
-Also contract-impacting: new public property, new variant axis/value, documented RTL/platform behavior change, dependency change, accessibility acceptance change.
+Also contract-impacting: new public property, new variant axis/value, documented Language/Direction/platform behavior change, dependency change, accessibility acceptance change.
 
 When breaking is required:
 
@@ -162,7 +162,7 @@ Update the contract first for approved non-breaking contract-impacting changes. 
 7. Missing required states  
 8. Broken theme behavior  
 9. Broken responsive / platform behavior  
-10. Broken Arabic or RTL behavior  
+10. Broken Arabic (Language) or Direction/RTL behavior  
 11. Variant/property architecture  
 12. Naming  
 13. Documentation and polish (only if in scope)
@@ -193,15 +193,15 @@ Component text node
     → typography variables inside that Text Style
 ```
 
-Assign style → remove accidental overrides → verify internal variables → bind semantic text color separately when needed. Missing style → `FP-*`. Do not edit shared styles unless explicitly approved.
+Assign style → remove accidental overrides → verify internal variables → bind semantic text color separately when needed. Missing style → `FP-*`. Do not edit shared styles unless explicitly approved. When repairing missing AR stress, apply automatic glossary strings (Build Appendix A) — do not invent product policy.
 
 ### Layout / responsive / platform
 
 Fix Auto Layout direction, gap, padding, Hug/Fill/min/max. Stress long EN/AR. Respect Web viewport vs Tablet/Mobile touch rules from the contract.
 
-### Theme / RTL
+### Theme / Language / Direction
 
-Fix semantic bindings; test Light/Dark; no theme variants. Use Leading/Trailing and Start/End; mirror only directional icons; keep inherently LTR values readable.
+Fix semantic bindings; test Light/Dark; no theme variants. **Language:** EN/AR Text Styles + automatic AR stress for contracted roles. **Direction:** Leading/Trailing and Start/End; mirror only directional icons; keep inherently LTR values readable. Never “fix” Language by only changing Direction, or the reverse.
 
 ### Missing shadow
 
@@ -230,7 +230,7 @@ On live-vs-contract drift: match the contract when safe; if live behavior is the
 
 ### 4. Revalidate changed areas
 
-Focused checks for: original finding, adjacent states, public API, responsive/platform behavior, Text Styles, contrast/focus/target where affected, theme, RTL where affected, documentation accuracy, runtime handoff completeness.
+Focused checks for: original finding, adjacent states, public API, responsive/platform behavior, Text Styles, contrast/focus/target where affected, theme, Language, Direction where affected, documentation accuracy, runtime handoff completeness.
 
 ### 5. Stop conditions
 

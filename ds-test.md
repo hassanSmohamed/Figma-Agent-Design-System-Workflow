@@ -1,6 +1,6 @@
 ---
 name: ds-test
-description: Read-only QA/test of one foundation component for one platform. Checks structure, tokens, Text Styles, variants/states, themes, a11y WCAG 2.2 design evidence plus APCA additional contrast confirmation, EN LTR + AR RTL, Web/Tablet/Mobile platform rules. Default report is a short What/Why/How findings table; full matrices only on request. Use after /ds-build.
+description: Read-only QA/test of one foundation component for one platform. Checks structure, tokens, Text Styles, variants/states, themes, a11y WCAG 2.2 design evidence plus APCA additional contrast confirmation, Language (EN + automatic AR stress) and Direction (LTR/RTL) as separate axes, Web/Tablet/Mobile platform rules. Default report is a short What/Why/How findings table; full matrices only on request. Use after /ds-build.
 ---
 
 # Design System Test
@@ -84,7 +84,7 @@ Required section intake:
 - Content contract
 - Sizing and responsive behavior
 - Platform contract
-- Theme, localization, and RTL contract
+- Theme, Language, and Direction contract (separate)
 - Accessibility contract
 - Foundation and dependency map
 - Acceptance criteria
@@ -101,7 +101,9 @@ If no reliable contract exists, continue the test but set result to `Fail` unles
 - Treat the exact existing Text Style as the typography assignment API
 - Treat typography variables inside the Text Style as style dependencies, not node substitutes
 - Treat Light/Dark as modes
-- Treat English/Arabic as content and Text Style concerns
+- Treat English/Arabic as **Language** (content + Text Style) concerns
+- Treat LTR/RTL as **Direction** (layout) concerns — separate from Language
+- Fail when a contracted text role has EN but no automatic AR stress copy
 - Do not fail for undocumented taste preferences
 - Do not repair findings here — recommend `/ds-fix`
 
@@ -118,7 +120,7 @@ If no reliable contract exists, continue the test but set result to `Fail` unles
 
 ### 1. Identify contract and platform rules
 
-Record purpose, anatomy, properties, states, dependencies, themes, RTL, accessibility expectations, contract ID/version/status, and platform-specific rules (hover/keyboard for Web; touch targets for Tablet/Mobile).
+Record purpose, anatomy, properties, states, dependencies, themes, **Language**, **Direction**, accessibility expectations, contract ID/version/status, and platform-specific rules (hover/keyboard for Web; touch targets for Tablet/Mobile).
 
 ### 2. Structural test
 
@@ -126,7 +128,7 @@ Check naming, variant axes/values, duplicate or missing combinations, property l
 
 Flag variant explosion from Theme, Language, individual icons, icon position, width, or platform without structural need.
 
-Also check contract drift: public API, states, dependencies, responsive/platform/RTL behavior vs `CC-*`.
+Also check contract drift: public API, states, dependencies, responsive/platform/**Language**/**Direction** behavior vs `CC-*`.
 
 ### 3. Binding and token test
 
@@ -218,17 +220,21 @@ Cover:
 - Reading order and grouping
 - Motion / reduced-motion guidance when motion exists
 
-Use stable IDs `A11Y-001`, `A11Y-002`, … for accessibility findings. Include principle, evidence class, variant/layer, platform, theme, language/direction, **WCAG measurement**, **APCA Lc**, user impact, expected result, design fix (prefer next passing shade/tint on the approved ramp), documentation fix, runtime handoff, and severity.
+Use stable IDs `A11Y-001`, `A11Y-002`, … for accessibility findings. Include principle, evidence class, variant/layer, platform, theme, **language**, **direction** (separate fields), **WCAG measurement**, **APCA Lc**, user impact, expected result, design fix (prefer next passing shade/tint on the approved ramp), documentation fix, runtime handoff, and severity.
 
 Never claim from Figma alone: semantic HTML, ARIA, accessibility-tree names, keyboard handling, screen-reader announcements, focus management, DOM order, live regions, or reduced-motion media queries.
 
-### 9. EN LTR + AR RTL test
+### 9. Language and Direction test (separate)
 
-Check Leading/Trailing naming, Start/End alignment, directional icon mirroring only, layer order, Arabic typography, mixed-direction field values, action-group order, no duplicate RTL component sets, no Direction variant growth without structural need.
+**Language:** EN + automatic AR stress copy for every contracted text role; correct `Text/EN/…` and `Text/AR/…` styles; no EN/AR duplicate sets; no Language variant solely for i18n.
+
+**Direction:** Leading/Trailing naming, Start/End alignment, directional icon mirroring only, layer order, mixed-direction field values, action-group order, no Direction variant growth without structural need.
+
+Do not treat “Arabic” as proof of RTL or “English” as proof of LTR — verify both axes. Primary stress pairing remains EN+LTR and AR+RTL.
 
 ### 10. Documentation test
 
-Check component docs sections: Overview, Styles & Variables (scoped + contextual), Anatomy, Variants, Behavior & interaction, Detail specs, Usage (Use for / Don’t use for), Composition, Edge cases, Status—plus platform example, EN + AR / Light + Dark coverage, readiness label, and `CC-*` traceability. No overlapping restatements across sections. Foundations must be linked, not redefined. Gaps that block safe handoff → recommend `/ds-document`.
+Check component docs sections: Overview, Styles & Variables (scoped + contextual), Anatomy, Variants, Behavior & interaction, Detail specs, Usage (Use for / Don’t use for), Composition, Edge cases, Status—plus platform example, **Language** (EN + AR) and **Direction** (LTR + RTL) / Light + Dark coverage, readiness label, and `CC-*` traceability. No overlapping restatements across sections. Foundations must be linked, not redefined. Gaps that block safe handoff → recommend `/ds-document`.
 
 ## Pass gates
 
@@ -242,6 +248,8 @@ The component passes only when:
 - Required states are present or explicitly unsupported
 - Light and Dark verified
 - English and Arabic stress tests do not break layout
+- Every contracted text role has automatic AR stress copy (or an explicit Plan exemption)
+- Direction LTR and RTL verified separately from Language
 - Every production text node uses the exact approved Text Style for role, language, and platform mode
 - Typography variables verified inside assigned Text Styles
 - No unintended local typography overrides
@@ -353,12 +361,26 @@ Keep the same rigor; output these sections when the user requests more detail:
 | Requirement | Supported | Verified | Notes |
 |---|---|---|---|
 
-#### Theme and Language Matrix
+#### Theme Matrix
 
 | Scenario | Result | Evidence |
 |---|---|---|
 
-Include Light+EN, Dark+EN, Light+AR, Dark+AR, and this platform’s narrow/wide stress cases.
+Include Light and Dark for this platform.
+
+#### Language Matrix
+
+| Scenario | Result | Evidence |
+|---|---|---|
+
+Include EN and AR (automatic stress) for each contracted text role; Light+EN, Dark+EN, Light+AR, Dark+AR when theme applies.
+
+#### Direction / RTL Readiness
+
+| Check | Result | Evidence | Finding ID |
+|---|---|---|---|
+
+Verify LTR and RTL layout independently of Language.
 
 #### Contrast Confirmation (WCAG + APCA)
 
@@ -389,14 +411,9 @@ If no component-set examples are present, write `None`.
 | Check | Result | Evidence | Finding ID |
 |---|---|---|---|
 
-#### RTL Readiness
-
-| Check | Result | Evidence | Finding ID |
-|---|---|---|---|
-
 #### Accessibility detail (`A11Y-*`)
 
-When asked: principle, evidence class, platform, theme, language/direction, WCAG measurement, APCA Lc, user impact, expected result, design fix, documentation fix, runtime handoff, severity.
+When asked: principle, evidence class, platform, theme, language, direction (separate), WCAG measurement, APCA Lc, user impact, expected result, design fix, documentation fix, runtime handoff, severity.
 
 ## Completion gate
 
@@ -405,7 +422,7 @@ Complete only when:
 - The component was not modified
 - One component + one platform were tested
 - Contract intake was attempted and recorded in Test Result
-- Structure, bindings, typography, theme, responsive/platform, states, a11y, RTL, and documentation were covered in the review (even if not all printed)
+- Structure, bindings, typography, theme, responsive/platform, states, a11y, Language, Direction, and documentation were covered in the review (even if not all printed)
 - Nested dependency reuse was reviewed when relevant
 - Default report uses the simple Findings table (or `No findings`)
 - Every failure has plain-language What / Why / How, a Where path, and a stable `QA-*` (and `A11Y-*` when accessibility)
