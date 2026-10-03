@@ -3,7 +3,7 @@
 Sample names. In a real run, use the live file's names.
 
 ```text
-Skill: /ds-foundation-architecture-review · Package 2.1.0 · Mode: Post-generate check (read-only)
+Skill: /ds-foundation-architecture-review · Package 2.2.0 · Mode: Post-generate check (read-only)
 Target: Acme DS (source library) · Profile: FPR-ACME-001 v1
 Capability: C1–C4 OK, C5 yes (scripts), C6 not needed · Gates checked: 10/10
 ```

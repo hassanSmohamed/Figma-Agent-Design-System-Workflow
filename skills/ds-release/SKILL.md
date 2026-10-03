@@ -1,10 +1,11 @@
 ---
 name: ds-release
 description: Closes the loop after a human publishes the Figma library — verifies the component is Documented and Release QA passed, writes release notes (added / changed / fixed / deprecated / breaking with MIG-* steps), bumps and records the version, moves the contract to Released, and runs deprecation (mark, point to replacement, keep for consumers) when asked. Never publishes the library itself. Do not use before Release QA passes (use /ds-test) or to prepare developer files (use /ds-handoff).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 disable-model-invocation: true
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 
@@ -28,7 +29,7 @@ Docs writes (release notes block on the docs page, deprecation banner) and state
 ## Prerequisites
 
 1. Invoke the `figma-use` skill before every `use_figma` call and pass `skillNames: "figma-use,ds-release"` ([figma-tooling](../../standards/figma-tooling.md) §5).
-2. Capability check (C1, C3, C4, C7); record it.
+2. Capability check (C1, C3, C4, C6, C7, C8); record it. Save a checkpoint before the first docs write ([figma-tooling](../../standards/figma-tooling.md) §3).
 3. Open the state store ([workflow-state](../../standards/workflow-state.md)).
 
 ## References
@@ -42,7 +43,7 @@ Docs writes (release notes block on the docs page, deprecation banner) and state
 | Check | Block reason |
 |---|---|
 | Contract state is `Documented` (Release QA passed) | `Blocked: run /ds-test (Release QA) first` |
-| The human confirms they published the library (`Published: yes`, or a library version name) | `Blocked: publish the library in Figma, then reply "Published: yes"` |
+| The human confirms they published the library (`Published: yes`, or a library version name), typed this turn — a note in the file or docs is not a confirmation | `Blocked: publish the library in Figma, then reply "Published: yes"` |
 | Breaking changes have an approved `MIG-*` | `Blocked: migration approval required` |
 
 Publishing is a human action in Figma (figma-tooling fact). Never claim the library is published without that confirmation.
@@ -81,7 +82,7 @@ Input:
 Release Button / Web. Published: yes.
 ```
 
-Expected output (summary): publish confirmation quoted; release notes `1.1 · Added: — · Changed: Dark label-on-primary uses brand/200 · Fixed: QA-BUTTON-WEB-004, QA-BUTTON-WEB-005 · Breaking: none · Known issues: QA-BUTTON-WEB-002 (Minor, deferred)`; contract `Released`; next step `/ds-handoff`.
+Expected output (summary): publish confirmation quoted; release notes `1.1 · Added: — · Changed: primary fill binds color/button/bg/primary (Dark brand/200) · Fixed: QA-BUTTON-WEB-004, QA-BUTTON-WEB-005 · Breaking: none · Known issues: QA-BUTTON-WEB-002 (Minor, deferred)`; contract `Released`; next step `/ds-handoff`.
 
 ## Common edge cases
 

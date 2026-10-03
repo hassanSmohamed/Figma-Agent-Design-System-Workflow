@@ -1,5 +1,6 @@
 # Findings: Severity, Rule IDs, Fingerprints
 
+<!-- core -->
 ## 1. One severity scale (all skills)
 
 | Severity | Use for | Blocks next step? |
@@ -22,6 +23,7 @@ Every findings table has a `Blocks next step?` column. Old labels map like this:
 | Test `Pass` | No findings, or Info only |
 | Test `Pass with findings` | Moderate / Minor / Info only |
 | Test `Fail` | Any Critical or Major |
+<!-- /core -->
 
 ## 2. Rule IDs (stable checks)
 

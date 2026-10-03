@@ -1,10 +1,11 @@
 ---
 name: ds-foundation-extend
-description: Executes approved FP-* foundation proposals (new variables, modes, Text/Effect/Paint/Layout styles) in the active Figma design-system file through the package's single foundation-mutation path — re-verify, checkpoint, create in existing collections, alias per mode, set scopes/code syntax/descriptions, validate, log rollback, and update the Foundation Profile. Use after Review, Plan, Test, or the architecture review proposes FP-* items and a human approves them. Do not use to design new foundations from scratch (use /ds-foundation-generate) or to judge foundations (use /ds-foundation-architecture-review).
+description: Executes approved FP-* foundation proposals (new variables, modes, Text/Effect/Paint/Layout styles) and approved FPV-* token value changes (with a consumer contrast table) in the active Figma design-system file through the package's single foundation-mutation path — re-verify, checkpoint, create in existing collections, alias per mode, set scopes/code syntax/descriptions, validate, log rollback, flag consumers for re-test, and update the Foundation Profile. Use after Review, Plan, Build, Fix, Test, or the architecture review proposes FP-* or FPV-* items and a human approves them. Do not use to design new foundations from scratch (use /ds-foundation-generate) or to judge foundations (use /ds-foundation-architecture-review).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 disable-model-invocation: true
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 
@@ -18,6 +19,7 @@ Mutating (foundation write).
 
 - "Execute approved FP-SYS-001, FP-BUTTON-WEB-002."
 - A review, plan, or test raised `FP-*` items and the human typed `Approve FP-…`.
+- A build or fix stopped with `Blocked: shared token change needs FPV-…`, and the human typed `Approve FPV-…` after reading the consumer contrast table.
 
 ## When not to use
 
@@ -28,9 +30,9 @@ Mutating (foundation write).
 ## Prerequisites
 
 1. Invoke the `figma-use` skill before every `use_figma` call and pass `skillNames: "figma-use,ds-foundation-extend"` ([figma-tooling](../../standards/figma-tooling.md) §5).
-2. Capability check: C1, C2, C6 (C9 when adding modes).
+2. Capability check: C1, C2, C6, C7, C8 (C9 when adding modes).
 3. Open the state store ([workflow-state](../../standards/workflow-state.md)) and read the Profile (or the user accepts `Unknown` naming checks).
-4. Each `FP-*` exists with all required fields (Registry, Review/Plan report, or contract Table C) and a verbatim approval naming it (`Approve FP-…`).
+4. Each `FP-*` / `FPV-*` exists with all required fields (Registry, Review/Plan report, or contract Table C) and a verbatim approval naming it (`Approve FP-…` / `Approve FPV-…`), typed this turn or stored with approver and date ([lifecycle-and-ids](../../standards/lifecycle-and-ids.md) §4).
 5. Checkpoint saved.
 
 ## References
@@ -47,6 +49,13 @@ Scripts: [contrast-pairs](../../scripts/figma/contrast-pairs.js), [text-style-au
 4. **Create** — exactly per [foundation-mutation](../../standards/foundation-mutation.md) execution steps 2–7. Return the IDs of every created variable and style.
 5. **Validate** — re-read created items; contrast pairs for new color roles (Light + Dark, WCAG + APCA); Arabic rules for new AR Text Styles.
 6. **Record** — ledger (FP status `Created`, with IDs), registry, Profile version bump if the role set or grammar changed.
+
+**`FPV-*` (token value change)** — follow the `FPV-*` rules in [foundation-mutation](../../standards/foundation-mutation.md):
+
+1. Re-scan consumers. A consumer missing from the approved list → `Blocked: live file drift` (the approval covered a different set).
+2. Re-run the before/after contrast table with `checkContrastPairs`. Any pair that passed before and fails after → `Blocked: FPV-… breaks {consumer} contrast`.
+3. Change the alias per mode; rollback = the previous alias per mode.
+4. Write `Re-test needed: FPV-…` on every consumer at `Tested` or later; next step for each is `/ds-test` (Build QA).
 
 ## Examples
 
@@ -82,7 +91,8 @@ plus contrast rows for new color roles, the Profile change (or `No Profile chang
 
 ## Completion gate
 
-- Only approved FP items created; each re-verified first
+- Only approved FP items created and approved FPV changes applied; each re-verified first
+- FPV: consumer list and contrast table re-checked; consumers flagged `Re-test needed`
 - Existing collections/groups used; no renames or deletions
 - Every mode filled; scopes, descriptions, code syntax set; primitives hidden
 - Validation done (or `Unverified` with reason)

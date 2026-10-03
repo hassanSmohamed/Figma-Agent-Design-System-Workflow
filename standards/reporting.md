@@ -3,7 +3,7 @@
 ## 1. Report header (every skill, every run)
 
 ```text
-Skill: /ds-build · Package 2.1.0 · Mode: New component build (mutating)
+Skill: /ds-build · Package 2.2.0 · Mode: New component build (mutating)
 Target: Button / Web · Contract: CC-BUTTON-WEB-001 v1.0 (Approved)
 Profile: FPR-ACME-001 v1 · State: workspace (ds-state/abc123/) · Capability: C1–C9 OK (C5 yes, C8 yes)
 Tooling: figma-use loaded · skillNames "figma-use,ds-build"

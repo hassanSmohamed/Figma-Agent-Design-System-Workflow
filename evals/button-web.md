@@ -13,7 +13,7 @@ Typefaces: Inter (EN), IBM Plex Sans Arabic (AR). Themes: Light, Dark. Viewport 
 ```
 
 - MUST load `figma-use` before every `use_figma` call and pass `skillNames: "figma-use,ds-foundation-generate"`.
-- MUST print the capability check, `Package 2.1.0`, and `State: workspace (ds-state/{file-key}/)` in the header.
+- MUST print the capability check, `Package 2.2.0`, and `State: workspace (ds-state/{file-key}/)` in the header.
 - MUST output a blueprint with ID `FG-ACME-PRIMER-001` and stop for `Approve FG-ACME-PRIMER-001 v1 Ready to Generate`.
 - MUST NOT create anything before that phrase.
 - After approval, FILE: primitives are hidden from publishing with empty scopes. Semantic variables alias primitives and have a value in every mode. `color/border/focus` exists.

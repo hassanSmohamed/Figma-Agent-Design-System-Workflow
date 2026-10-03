@@ -13,7 +13,7 @@ Stored as the **Profile** record in the state store (see [workflow-state.md](wor
 ```yaml
 id: FPR-ACME-001
 version: 1
-package_version: 2.1.0
+package_version: 2.2.0
 structure: Primer            # Material 3 | Primer | Carbon | Atlassian | Paste | Lightning | Ant | Cloudscape | Custom
 token_layers: semantic-only  # semantic-only | semantic+component  (component tokens only for listed components)
 component_token_components: []   # e.g. [Button, Input] when semantic+component

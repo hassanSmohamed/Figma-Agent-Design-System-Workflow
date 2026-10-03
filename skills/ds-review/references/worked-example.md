@@ -3,7 +3,7 @@
 This example shows the shape and depth of a good review. All names are **sample names**. In a real run, use the names from the live file and the Profile.
 
 ```text
-Skill: /ds-review · Package 2.1.0 · Mode: Component coverage (read-only)
+Skill: /ds-review · Package 2.2.0 · Mode: Component coverage (read-only)
 Target: Button / Web · Contract: — (suggested CC-BUTTON-WEB-001) · Profile: FPR-ACME-001 v1
 Capability: C1–C4 OK, C5 yes · Gates checked: 14/14 · Checkpoint: n/a (read-only) · Sandbox: not used
 ```
@@ -70,7 +70,7 @@ All other checked needs: OK (see Coverage Matrix).
 | N-13 | Nested | Yes | `Icon / Web`, optional `Spinner / Web` |
 | N-14 | Language | Yes | AR Label style + AR stress strings from the locale pack |
 | N-15 | Direction | Yes | Catalog: Level 2 helper `.Button/Content` (icon order flips) |
-| N-16 | A11y | Yes | 2.4.7 / 2.4.11 focus, 1.4.3 + APCA label contrast, 2.5.8 target |
+| N-16 | A11y | Yes | 2.4.7 focus (2.4.13 ring policy), 1.4.3 + APCA label contrast, 2.5.8 target |
 
 ## Coverage Matrix (abridged)
 
@@ -99,7 +99,7 @@ All other checked needs: OK (see Coverage Matrix).
 |---|---|---|---|---|---|---|---|---|
 | FP-SYS-001 | Semantic color | `color/border/focus` | `Semantic` | Light, Dark | Light → `color/brand/600`, Dark → `color/brand/300` (confirm ≥ 3:1 vs fill and background) | No | Medium | Proposed |
 
-Detail: scopes `STROKE_COLOR`; code syntax `--color-border-focus`; reason: every focusable control needs a visible focus ring (2.4.7, 2.4.11); affected: Button, Input, Checkbox, Radio, Toggle, Link, Icon Button, Menu; alternative rejected: reusing `color/border/default` (different role).
+Detail: scopes `STROKE_COLOR`; code syntax `--color-border-focus`; reason: every focusable control needs a visible focus ring (2.4.7; ring policy from 2.4.13); affected: Button, Input, Checkbox, Radio, Toggle, Link, Icon Button, Menu; alternative rejected: reusing `color/border/default` (different role).
 
 ## Plan Handoff Package
 

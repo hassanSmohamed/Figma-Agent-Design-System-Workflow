@@ -1,5 +1,7 @@
 # Design System Skills — Gap Review and Fix Plan
 
+> **Historical document.** This review covers the old v1.x flat files (`ds-*.md`), which no longer exist. Every finding was resolved in 2.0.0; see the resolution map in [CHANGELOG.md](../CHANGELOG.md). Line numbers and file names below refer to v1.x.
+
 Review date: 2 Oct 2026
 Scope: all 11 skill files in this repo (`ds-*.md`) plus `README.md`. About 6,000 lines were reviewed.
 Reviewer view: design-system architecture, Figma Variables/Styles, accessibility, bilingual EN/AR, and how well an AI agent can follow the skills.

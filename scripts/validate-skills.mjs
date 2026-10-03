@@ -17,6 +17,8 @@ const REQUIRED_HEADINGS = ['When to use', 'When not to use', 'Instructions', 'Ex
 const FIGMA_HEADINGS = ['Prerequisites'];
 const MAX_LINES = 500;
 const MAX_TOKENS = 5000;
+const MAX_KB = { single: 100, slim: 32 };
+const REPO_PATH_RE = /`((?:scripts|standards|catalog|skills|evals|docs)\/[\w./-]+\.(?:md|js|mjs))`/g;
 
 const errors = [];
 const fail = (where, msg) => errors.push(`${where}: ${msg}`);
@@ -89,20 +91,36 @@ function checkSkill(skillDir, { bundled }) {
   }
 }
 
-function checkSingle(file) {
+function checkSingleFile(file, edition) {
   const text = readFileSync(file, 'utf8');
   if (!parseFrontmatter(text)) fail(rel(file), 'missing YAML frontmatter');
-  if (/```(javascript|js)\n/.test(text) && /figma\.(variables|root|createFrame)/.test(text)) fail(rel(file), 'single-file edition must not embed reference scripts');
-  if (linksIn(text, file).length) fail(rel(file), 'single-file edition must not contain relative links');
+  if (/```(javascript|js)\n/.test(text) && /figma\.(variables|root|createFrame)/.test(text)) fail(rel(file), `${edition} edition must not embed reference scripts`);
+  if (linksIn(text, file).length) fail(rel(file), `${edition} edition must not contain relative links`);
+  const kb = Buffer.byteLength(text) / 1024;
+  if (kb > MAX_KB[edition]) fail(rel(file), `${edition} edition is ${kb.toFixed(0)} KB (max ${MAX_KB[edition]} KB)`);
+}
+
+/** Backticked repo paths in docs (for example `scripts/figma/contrast-pairs.js`) must exist. History files are skipped. */
+function checkRepoPaths() {
+  const docs = ['README.md', ...['skills', 'standards', 'catalog', 'evals', 'scripts'].flatMap((d) => filesUnder(path.join(ROOT, d)).map((f) => rel(f)))]
+    .filter((f) => f.endsWith('.md'));
+  for (const doc of docs) {
+    for (const [, repoPath] of readFileSync(path.join(ROOT, doc), 'utf8').matchAll(REPO_PATH_RE)) {
+      if (!existsSync(path.join(ROOT, repoPath))) fail(doc, `mentions missing file \`${repoPath}\``);
+    }
+  }
 }
 
 const sourceSkills = listSkills(path.join(ROOT, 'skills'));
 sourceSkills.forEach((s) => checkSkill(path.join(ROOT, 'skills', s), { bundled: false }));
+checkRepoPaths();
 
 const distSkills = path.join(ROOT, 'dist', 'skills');
-const distSingle = path.join(ROOT, 'dist', 'single');
 listSkills(distSkills).forEach((s) => checkSkill(path.join(distSkills, s), { bundled: true }));
-if (existsSync(distSingle)) readdirSync(distSingle).filter((f) => f.endsWith('.md')).forEach((f) => checkSingle(path.join(distSingle, f)));
+for (const edition of Object.keys(MAX_KB)) {
+  const dir = path.join(ROOT, 'dist', edition);
+  if (existsSync(dir)) readdirSync(dir).filter((f) => f.endsWith('.md')).forEach((f) => checkSingleFile(path.join(dir, f), edition));
+}
 
 errors.forEach((e) => console.error(`FAIL ${e}`));
 console.log(`\nChecked ${sourceSkills.length} source skills${existsSync(distSkills) ? ' and dist/' : ''}: ${errors.length} problem(s).`);

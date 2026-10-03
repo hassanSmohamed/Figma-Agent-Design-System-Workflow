@@ -95,7 +95,8 @@ const THRESHOLDS = {
   'label-text': { wcag: 4.5, apca: 60 },
   'large-text': { wcag: 3, apca: 45 },
   'non-text-ui': { wcag: 3, apca: 45 },
-  'placeholder-disabled': { wcag: 0, apca: 30 },
+  placeholder: { wcag: 4.5, apca: 45 },
+  disabled: { wcag: 0, apca: 30 },
   decorative: { wcag: 0, apca: 15 },
 };
 

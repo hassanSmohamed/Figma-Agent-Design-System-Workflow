@@ -7,7 +7,8 @@ These files check that the skills still behave after you edit them. Each case ha
 | [button-web.md](button-web.md) | The happy path for `Button / Web`, from generate to handoff |
 | [gates.md](gates.md) | Negative cases: each gate must stop the agent with the exact block reason |
 | [rtl.md](rtl.md) | Direction and Language cases (helper levels, mirroring, mixed-direction values, Arabic rules) |
-| [state.md](state.md) | Where workflow state lives: workspace default, in-file opt-in, switching, paste fallback |
+| [state.md](state.md) | Where workflow state lives: workspace default, in-file opt-in, switching, paste fallback, revisions |
+| [skills.md](skills.md) | One positive case per skill (all 15) |
 
 ## How to run
 
@@ -15,7 +16,9 @@ These files check that the skills still behave after you edit them. Each case ha
 2. Set up the **starting state** the case describes.
 3. Paste the prompt. Save the report text.
 4. Check every assertion by hand, or let a second agent grade it (prompt: "Grade this report against these assertions. Answer PASS or FAIL per line, with the quote that proves it").
-5. A skill change is safe to merge when `node scripts/validate-skills.mjs` passes, every case in `gates.md` and `state.md` passes, and no `button-web.md` assertion regresses.
+5. A skill change is safe to merge when `node scripts/validate-skills.mjs` and `node scripts/check-evals.mjs` pass, every case in `gates.md`, `state.md` and `skills.md` passes, and no `button-web.md` assertion regresses.
+
+`check-evals.mjs` is a cheap first check that needs no agent run: every block reason an eval expects must be one a skill can emit, and every skill must have a case in `skills.md`.
 
 ## Assertion style
 

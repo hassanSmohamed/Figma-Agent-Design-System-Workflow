@@ -1,9 +1,10 @@
 ---
 name: ds-review
 description: Deep read-only foundations and component-readiness review in the active Figma design-system file before Plan or Build. Verifies live Variables and Styles (Text, Paint, Effect, Layout) against the Foundation Profile and the component catalog, inventories gaps as FP-* proposals, scores readiness with the shared severity scale, and writes a Plan Handoff Package. Includes Delta review for unchanged foundations and a Family parity pass across Web/Tablet/Mobile. Do not use for whole-foundation health (use /ds-foundation-architecture-review), for writing the contract (use /ds-plan), or for QA of a built component (use /ds-test).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 

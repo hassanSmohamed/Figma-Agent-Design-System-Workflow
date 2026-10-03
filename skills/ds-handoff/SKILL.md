@@ -1,9 +1,10 @@
 ---
 name: ds-handoff
 description: Prepares the developer handoff for a released (or tested) Figma component and its foundations — DTCG 2025.10 token export with modes and aliases (Style Dictionary ready), Figma property to code prop mapping (Code Connect ready), runtime accessibility notes from the WAI-ARIA APG pattern, Direction and Language implementation notes, and the contrast evidence table. Read-only in Figma; outputs files or text. Do not use for design-side docs pages (use /ds-document) or to write production component code.
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill. Writes export files only when the runtime has a workspace.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 

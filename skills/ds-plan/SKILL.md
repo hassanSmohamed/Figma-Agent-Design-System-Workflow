@@ -1,9 +1,10 @@
 ---
 name: ds-plan
 description: Creates or revises a versioned Component Contract (CC-*) for one component on one platform (Web, Tablet, or Mobile) — purpose, anatomy, a single controls table (Table B) as the public API, states, content with EN + AR stress copy, responsive rules, Theme / Language / Direction (hybrid RTL levels), WCAG 2.2 + APCA accessibility, foundation map with FP-* solves, nested dependency configs, blocks, and optional code mapping. Writes the contract record to the state store and stops for a versioned human approval. Supports Sibling delta contracts for Tablet/Mobile. Do not use before /ds-review has a handoff for the target, or to build anything (use /ds-build after approval).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 

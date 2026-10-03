@@ -3,18 +3,18 @@
 Sample names and sample numbers. A real build reports live names and measured values.
 
 ```text
-Skill: /ds-build · Package 2.1.0 · Mode: New
-Target: Button / Web · Contract: CC-BUTTON-WEB-001 v1.0 (Approved) · Profile: FPR-ACME-001 v1
-State: workspace (ds-state/abc123/) · Tooling: figma-use loaded · skillNames "figma-use,ds-build"
-Capability: C1–C7 OK, C5 yes · Gates checked: 9/9
-Checkpoint: "ds-build CC-BUTTON-WEB-001 v1.0 start 2026-10-02 14:05" · Sandbox cleaned: Yes
+Skill: /ds-build · Package 2.2.0 · Mode: New
+Target: Button / Web · Contract: CC-BUTTON-WEB-001 v1.1 (Approved) · Profile: FPR-ACME-001 v1
+State: workspace (ds-state/abc123/), ledger rev 9 · Tooling: figma-use loaded · skillNames "figma-use,ds-build"
+Capability: C1–C8 OK, C5 yes · Gates checked: 9/9
+Checkpoint: "ds-build CC-BUTTON-WEB-001 v1.1 start 2026-10-02 15:20" · Sandbox cleaned: Yes
 ```
 
 ## Build Summary
 
-- Approval: `"Approve CC-BUTTON-WEB-001 v1.0 Ready to Build. Also approve FP-SYS-001"`
+- Approval: `"Approve CC-BUTTON-WEB-001 v1.1 Ready to Build. Also approve FP-SYS-001, FP-BUTTON-WEB-002"` (typed this turn by @lina, 2026-10-02)
 - Result: state → `Built`
-- Variants: 66 (72 minus 6 invalid) · Properties: 6 · FP created: 1
+- Variants: 66 (72 minus 6 invalid) · Properties: 6 · FP created: 2
 - Highest remaining risk: none blocking; 1 Minor (layer name polish)
 
 ## Table C execution log
@@ -22,6 +22,7 @@ Checkpoint: "ds-build CC-BUTTON-WEB-001 v1.0 start 2026-10-02 14:05" · Sandbox 
 | FP ID | Action | Result | Rollback |
 |---|---|---|---|
 | FP-SYS-001 | Created `color/border/focus` in `Semantic`; Light → `color/brand/600`, Dark → `color/brand/300`; scope `STROKE_COLOR`; code syntax `--color-border-focus` | Verified on re-read | Delete variable `color/border/focus` |
+| FP-BUTTON-WEB-002 | Created `color/button/bg/primary` in `Semantic`; Light → `color/brand/600`, Dark → `color/brand/200`; scope `FRAME_FILL`; code syntax `--color-button-bg-primary` | Verified on re-read | Delete variable `color/button/bg/primary` |
 
 ## Table D execution log
 
@@ -60,14 +61,14 @@ Hierarchy → groups (4) · Size → columns (3) · State → rows (6). Gap 40, 
 | Pair | Role key | Mode | FG hex | BG hex | WCAG ratio | Pass | APCA Lc (signed) | Pass | Disposition |
 |---|---|---|---|---|---|---|---|---|---|
 | Label on primary | label-text | Light | `#FFFFFF` | `#0B5CD5` | 5.99:1 | Yes | -84.3 | Yes | Pass both |
-| Label on primary (first try) | label-text | Dark | `#0A0F1A` | `#6FA8FF` (`brand/300`) | 7.96:1 | Yes | 56.2 | **No** (< 60) | WCAG only — APCA fail |
-| Label on primary (after fix) | label-text | Dark | `#0A0F1A` | `#84B4FF` (`brand/200`) | 9.08:1 | Yes | 62.2 | Yes | Pass both |
+| Label on primary (v1.0, `color/bg/brand`) | label-text | Dark | `#0A0F1A` | `#6FA8FF` (`brand/300`) | 7.96:1 | Yes | 56.2 | **No** (< 60) | WCAG only — APCA fail |
+| Label on primary (v1.1, `color/button/bg/primary`) | label-text | Dark | `#0A0F1A` | `#84B4FF` (`brand/200`) | 9.08:1 | Yes | 62.2 | Yes | Pass both |
 | Focus ring vs fill | non-text-ui | Light | `#0B5CD5` | `#FFFFFF` | 5.99:1 | Yes | 79.1 | Yes | Pass both |
 | Focus ring vs page | non-text-ui | Dark | `#6FA8FF` | `#0A0F1A` | 7.96:1 | Yes | -54.4 | Yes | Pass both |
 
 Negative Lc means light text on a dark background. The pass check uses the absolute value.
 
-The Dark label pair passed WCAG but failed APCA. Build did not lower the bar or use a raw hex. The fix moved the Dark alias of `color/bg/brand` one step lighter on the same approved ramp (`brand/300` → `brand/200`). That is a token value change, so it was logged as contract note `v1.0 → v1.1 (non-breaking)` and approved before binding: `"Approve CC-BUTTON-WEB-001 v1.1 Ready to Build"`.
+On the first run (v1.0) the Dark label pair passed WCAG but failed APCA. Build did not lower the bar or use a raw hex, and it did not repoint `color/bg/brand`: that token is shared by Badge, Toggle and four other components, so changing it would be a token value change (`FPV-*`, with a contrast table for every consumer). Build stopped before Phase 5. `/ds-plan` revised the contract to v1.1 (non-breaking): Button binds a new component token `color/button/bg/primary` (`FP-BUTTON-WEB-002`) that aliases `brand/200` in Dark. The build ran again on v1.1 after the new approval, typed in this turn.
 
 ## Self-check (excerpt)
 
@@ -84,9 +85,10 @@ The Dark label pair passed WCAG but failed APCA. Build did not lower the bar or 
 | # | Object | Node ID | Change | Reason (contract §) | Rollback |
 |---|---|---|---|---|---|
 | 1 | `color/border/focus` | `VariableID:12:40` | Created | Table C FP-SYS-001 | Delete variable |
-| 2 | `.Button/Content` | `214:880` | Created helper set (LTR/RTL) | §8c Level 2 | Delete set |
-| 3 | `Button / Web` | `214:901` | Created 66 variants | §3–4 | Delete set |
-| 4 | Ledger | — | State `Built`, last phase 9, node IDs recorded | — | Edit ledger row |
+| 2 | `color/button/bg/primary` | `VariableID:12:41` | Created | Table C FP-BUTTON-WEB-002 | Delete variable |
+| 3 | `.Button/Content` | `214:880` | Created helper set (LTR/RTL) | §8c Level 2 | Delete set |
+| 4 | `Button / Web` | `214:901` | Created 66 variants | §3–4 | Delete set |
+| 5 | Ledger | — | State `Built`, last phase 9, node IDs recorded (rev 9 → 10) | — | Edit ledger row |
 
 ## Next step
 

@@ -29,6 +29,14 @@ test('APCA polarity follows colors, not theme: light text on brand fill is negat
   assert.ok(r.apcaLc < 0, `expected negative Lc, got ${r.apcaLc}`);
 });
 
+test('placeholder is not exempt from WCAG; disabled is', () => {
+  const placeholder = color.measurePair({ fg: '#AAAAAA', bg: '#FFFFFF', role: 'placeholder' });
+  assert.equal(placeholder.wcagPass, false, `#AAAAAA on white is ${placeholder.wcagRatio}:1`);
+  assert.notEqual(placeholder.disposition, 'Pass both');
+  const disabled = color.measurePair({ fg: '#AAAAAA', bg: '#FFFFFF', role: 'disabled' });
+  assert.equal(disabled.wcagPass, true);
+});
+
 test('transparent foreground is composited before measuring', () => {
   // 0x80 alpha = 128/255 ≈ 0.502 → white keeps 49.8% → 0x7F
   const r = color.measurePair({ fg: '#00000080', bg: '#FFFFFF', role: 'body-text' });

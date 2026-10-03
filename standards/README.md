@@ -17,4 +17,4 @@ When a skill and a standard disagree, the standard wins and the skill must be fi
 | [accessibility.md](accessibility.md) | WCAG 2.2 mapping, contrast procedure, APCA thresholds, targets, focus |
 | [reporting.md](reporting.md) | Report header, output levels, gates-checked line, next-step rule |
 
-Package version: **2.1.0** (see `CHANGELOG.md`). Every report header shows it.
+Package version: **2.2.0** (see `CHANGELOG.md`). Every report header shows it.

@@ -9,6 +9,7 @@
  *   dist/skills/<skill>/references/*.md   standards, catalog, worked examples (flat names)
  *   dist/skills/<skill>/scripts/*.js      Figma Plugin API reference scripts
  *   dist/single/<skill>.md                one Markdown file without scripts (Figma in-app custom skills)
+ *   dist/slim/<skill>.md                  SKILL.md + the <!-- core --> sections of the standards it uses (small context)
  *
  * Only files linked from a SKILL.md (directly or through other linked files) are included.
  * Links into another skill are not followed — refer to other skills by command name (/ds-…).
@@ -22,6 +23,9 @@ const SCRIPT_EXT = new Set(['.js', '.mjs']);
 const BUNDLED_EXT = new Set(['.md', ...SCRIPT_EXT]);
 const NO_SCRIPT_NOTE =
   '> **Single-file edition.** Reference scripts are not included. Where a step says to run a script, do the same check by hand and mark the numbers `Unverified`.';
+const SLIM_NOTE =
+  '> **Slim edition.** This skill\'s instructions plus the core rules only. Full standards, catalog and worked examples are in the folder or single-file edition. Where a step says to run a script, do the check by hand and mark the numbers `Unverified`.';
+const CORE_RE = /<!-- core -->\n?([\s\S]*?)<!-- \/core -->/g;
 
 const skillOf = (repoPath) => (repoPath.match(/^skills\/([^/]+)\//) || [])[1] || null;
 const isScript = (repoPath) => SCRIPT_EXT.has(path.extname(repoPath));
@@ -96,23 +100,50 @@ function bundleFolder(skill, map) {
   }
 }
 
-function bundleSingle(skill, map) {
-  const toText = (target, label) => {
+/** Turn relative links into plain text that says where the target lives in this edition. */
+function textLinks(map, where) {
+  return (target, label) => {
     const out = map.get(rel(target));
     if (!out) return null;
-    return isScript(rel(target)) ? `${label} (script not included — check by hand, mark \`Unverified\`)` : `${label} (appendix \`${out}\`)`;
+    return isScript(rel(target)) ? `${label} (script not included — check by hand, mark \`Unverified\`)` : `${label} (${where} \`${out}\`)`;
   };
-  const docs = [...map.keys()].filter((f) => !isScript(f));
-  const [main, ...rest] = docs;
-  const mainText = rewriteLinks(readFileSync(path.join(ROOT, main), 'utf8'), path.join(ROOT, main), toText);
-  let out = mainText.replace(/^(---\n[\s\S]*?\n---\n\s*# [^\n]*\n)/, `$1\n${NO_SCRIPT_NOTE}\n`);
-  for (const file of rest) {
+}
+
+/** SKILL.md with links as text and the edition note placed right after the "# Title". */
+function mainText(map, toText, note) {
+  const main = [...map.keys()][0];
+  const abs = path.join(ROOT, main);
+  return rewriteLinks(readFileSync(abs, 'utf8'), abs, toText).replace(/^(---\n[\s\S]*?\n---\n\s*# [^\n]*\n)/, `$1\n${note}\n`);
+}
+
+function writeEdition(folder, skill, text) {
+  mkdirSync(path.join(DIST, folder), { recursive: true });
+  writeFileSync(path.join(DIST, folder, `${skill}.md`), text);
+  return Buffer.byteLength(text);
+}
+
+const docsOf = (map) => [...map.keys()].filter((f) => !isScript(f)).slice(1);
+
+function bundleSingle(skill, map) {
+  const toText = textLinks(map, 'appendix');
+  let out = mainText(map, toText, NO_SCRIPT_NOTE);
+  for (const file of docsOf(map)) {
     const abs = path.join(ROOT, file);
     out += `\n\n---\n\n# Appendix: \`${map.get(file)}\`\n\n${rewriteLinks(readFileSync(abs, 'utf8'), abs, toText)}`;
   }
-  mkdirSync(path.join(DIST, 'single'), { recursive: true });
-  writeFileSync(path.join(DIST, 'single', `${skill}.md`), out);
-  return Buffer.byteLength(out);
+  return writeEdition('single', skill, out);
+}
+
+function bundleSlim(skill, map) {
+  const toText = textLinks(map, 'full edition');
+  const core = docsOf(map).flatMap((file) => {
+    const abs = path.join(ROOT, file);
+    const blocks = [...readFileSync(abs, 'utf8').matchAll(CORE_RE)].map((m) => m[1].trim().replace(/^(#{2,5}) /gm, '#$1 '));
+    return blocks.length ? [`## From \`${map.get(file)}\`\n\n${rewriteLinks(blocks.join('\n\n'), abs, toText)}`] : [];
+  });
+  let out = mainText(map, toText, SLIM_NOTE);
+  if (core.length) out = `${out.trimEnd()}\n\n---\n\n# Appendix: core rules\n\n${core.join('\n\n')}\n`;
+  return writeEdition('slim', skill, out);
 }
 
 rmSync(DIST, { recursive: true, force: true });
@@ -124,9 +155,9 @@ for (const skill of skills) {
   problems.push(...warnings, ...errors);
   if (errors.length) continue;
   bundleFolder(skill, map);
-  const bytes = bundleSingle(skill, map);
-  console.log(`${skill}: ${files.length} file(s), single ${(bytes / 1024).toFixed(0)} KB`);
+  const kb = (bytes) => `${(bytes / 1024).toFixed(0)} KB`;
+  console.log(`${skill}: ${files.length} file(s), single ${kb(bundleSingle(skill, map))}, slim ${kb(bundleSlim(skill, map))}`);
 }
 problems.forEach((p) => console.warn(`WARN ${p}`));
-console.log(`\nBundled ${skills.length} skills into dist/skills and dist/single (${problems.length} warning(s)).`);
+console.log(`\nBundled ${skills.length} skills into dist/skills, dist/single and dist/slim (${problems.length} warning(s)).`);
 process.exitCode = problems.length ? 1 : 0;

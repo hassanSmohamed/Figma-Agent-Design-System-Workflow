@@ -40,6 +40,25 @@ Not allowed when the part has ordered horizontal children (icon + label), Fill-w
 5. **Expose the helper's properties** on the parent ("expose nested instances"), so consumers set `Direction` on the instance. The main set gets **no** Direction axis.
 6. Keep all other helper properties (label text, icon swaps, booleans) wired through the parent's component properties.
 
+### Direction is set per instance (known cost)
+
+A Figma variable mode can't switch a component's variant, so a frame-level "RTL mode" does not flip nested helpers. Every Level 2 helper's `Direction` is set **on each instance** by the consumer (through the exposed property). There is no page-level or frame-level inheritance.
+
+What this means:
+
+| Component | Helpers per instance | Consumer cost in an RTL screen |
+|---|---|---|
+| Button, Input, Chip, Tab | 1 | One `Direction` change per instance |
+| Menu, Select (open list) | 1 per item row | One change per row; expose on each item instance |
+| Table | 1 per header row + 1 per body row (`.Table/Row`), plus 1 per cell whose content is ordered (for example Avatar + name) | One change per row, plus one per ordered cell. A 10-row table is 11+ changes |
+| Calendar | Header (month nav) + weekday row + 1 per week row (up to 6) | Up to 8 changes per calendar instance |
+
+Rules:
+
+1. Contract §8c lists every helper a consumer must set, so the docs can show it (Document, Behavior section, Direction notes).
+2. For Table and Calendar, the docs page includes a ready-made **RTL starter** instance with every helper already set. Consumers duplicate it instead of setting each helper.
+3. Do not add a Direction axis to the main set to save consumer clicks; that is still Level 3 and needs a `DEC-*`.
+
 ### Level 3 — Direction axis on the main set (last resort)
 
 Only when anatomy differs in more than order (rare). Needs a `DEC-*` with the reason and must not multiply other axes needlessly.

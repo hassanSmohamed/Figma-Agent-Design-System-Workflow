@@ -36,7 +36,7 @@ export function rewriteLinks(text, fileAbs, mapTarget) {
 /**
  * Parse the YAML frontmatter subset the skills use: one-line `key: value` pairs and one level of
  * nested maps (for `metadata`). Returns { data, raw, body, bodyStartLine } or null when there is no
- * frontmatter. `raw` keeps the unparsed values ("metadata.version" → '"2.1.0"') so quoting can be checked.
+ * frontmatter. `raw` keeps the unparsed values ("metadata.version" → '"2.2.0"') so quoting can be checked.
  */
 export function parseFrontmatter(text) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n?/);

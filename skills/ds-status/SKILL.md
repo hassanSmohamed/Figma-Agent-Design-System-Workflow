@@ -1,9 +1,10 @@
 ---
 name: ds-status
 description: Read-only status board for a Figma design-system file — reads the workflow state store (Profile, Registry, Ledger, contract records) and shows every component × platform with its contract version, lifecycle state, last phase, open and deferred findings, fix cycles, checkpoints, dependency readiness, and the one next step. Use to resume work in a new session or to see what is blocked. Do not use to run or continue a step (use /ds-run-workflow) or to judge quality (use /ds-review or /ds-test).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 
@@ -26,7 +27,7 @@ You are the program tracker. Answer "where is everything, and what should happen
 ## Prerequisites
 
 1. Invoke the `figma-use` skill before every `use_figma` call and pass `skillNames: "figma-use,ds-status"` ([figma-tooling](../../standards/figma-tooling.md) §5).
-2. Capability check: C1, C3, and C8 when state is in-file (plugin data).
+2. Capability check: C1, C3, and C7 (read the state store, including in-file plugin data).
 3. Open the state store ([workflow-state](../../standards/workflow-state.md)).
 
 ## References

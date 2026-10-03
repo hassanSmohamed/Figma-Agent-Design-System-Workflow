@@ -1,9 +1,10 @@
 ---
 name: ds-adopt
 description: Brings an existing Figma design-system file or existing component sets under the ds-* workflow without rebuilding them — sets up the state store, drafts a Foundation Profile from the live file for human confirmation, seeds the Registry, and writes as-is contracts (CC-* v0.x, mode Adopted) plus ledger rows for chosen components, with a first-pass findings scan. Use when a team already has foundations or components that were not made by this package. Do not use on an empty file (use /ds-foundation-generate) or to fix or rebuild components (use /ds-fix or /ds-build).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 

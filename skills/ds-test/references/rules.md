@@ -6,7 +6,7 @@ How to read the columns:
 
 - **Default severity** is the starting severity. Raise it when the user impact is worse. Lower it only with a written reason.
 - **Scope** says when the rule runs: `Build` means Build QA (every test run), and `Release` means Release QA only.
-- **Script** names the function that checks the rule automatically. `Manual` means you check it by inspection or in the sandbox.
+- **Script** names the function that checks the rule automatically. `Manual` means you check it by inspection or in the sandbox. Script rows with `status: Unverified` (mixed values, unresolvable bindings) are checked by hand and never reported as `Pass`.
 
 ## STR — Structure
 
@@ -25,9 +25,9 @@ How to read the columns:
 
 | Rule | Check | Default severity | Scope | Script |
 |---|---|---|---|---|
-| TOK-001 | No raw colors on production layers | Major | Build | `auditBindings` |
+| TOK-001 | No raw colors on production layers or in nested-instance overrides | Major | Build | `auditBindings` |
 | TOK-002 | No primitive variables on production layers | Major | Build | `auditBindings` |
-| TOK-003 | Padding, gap, radius bound to semantic number variables | Major | Build | `auditBindings` |
+| TOK-003 | Padding, gap, radius (any node), fixed width/height, min/max, and stroke weight bound to semantic number variables | Major | Build | `auditBindings` |
 | TOK-004 | Bindings match contract §10 (right role for the part/state) | Major | Build | Manual |
 
 ## TXT — Typography
@@ -36,12 +36,12 @@ How to read the columns:
 |---|---|---|---|---|
 | TXT-001 | Every text node has a Text Style | Major | Build | `auditTextStyles` |
 | TXT-002 | No local typography overrides on top of the style | Major | Build | `auditTextStyles` |
-| TXT-003 | Language matches the style prefix (Arabic text → `Text/AR/…`) | Major | Build | `auditTextStyles` |
+| TXT-003 | Language matches the style prefix (Arabic text → `Text/AR/…`) | Major | Build | `auditTextStyles` (set, then sandbox `rootId` for stress copy) |
 | TXT-004 | Style role matches contract §8b (Label vs Body, size) | Moderate | Build | Manual |
 | TXT-005 | No node-level typography variables bypassing the style | Moderate | Build | Manual |
 | TXT-006 | Arabic styles: letter spacing 0 | Major | Build | `auditArabicStyles` |
 | TXT-007 | Arabic styles: no case transform | Major | Build | `auditArabicStyles` |
-| TXT-008 | Arabic styles: line height ≥ Profile minimum | Moderate | Build | `auditArabicStyles` |
+| TXT-008 | Arabic styles: line height ≥ Profile minimum in every viewport mode | Moderate | Build | `auditArabicStyles` |
 | TXT-009 | Diacritics not clipped in fixed-height boxes | Major | Build | Manual (sandbox, AR pack diacritics line) |
 
 ## THM — Theme
@@ -77,11 +77,11 @@ How to read the columns:
 | A11Y-004 | Reflow with long EN/AR (1.4.10) | Moderate | Build | Manual (sandbox) |
 | A11Y-005 | Text spacing tolerance, Latin (1.4.12) | Moderate | Release | Manual |
 | A11Y-006 | Text can grow (1.4.4) | Moderate | Release | Manual |
-| A11Y-007 | Focus state exists for every focusable variant, Light and Dark; ring ≥ 2px (2.4.7) | Critical | Build | Manual |
-| A11Y-008 | Focus ring not clipped (2.4.11) | Major | Build | Manual (render bounds) |
+| A11Y-007 | Focus state exists for every focusable variant, Light and Dark (2.4.7); ring ≥ 2px (2.4.13 policy) | Critical | Build | Manual |
+| A11Y-008 | Focus ring not clipped by the component or a clipping parent (2.4.7) | Major | Build | Manual (render bounds) |
 | A11Y-009 | Target size ≥ Profile target (2.5.8 + platform) | Major | Build | Manual (measure) |
 | A11Y-010 | Error text not color alone; icon-only has a label property (3.3.1 / 3.3.2) | Major | Build | Manual |
-| A11Y-011 | Motion has a non-motion cue + reduced-motion note (2.2.2 / 2.3.3) | Moderate | Release | Manual |
+| A11Y-011 | Motion has a non-motion cue (2.2.2) + reduced-motion note (2.3.3 policy) | Moderate | Release | Manual |
 | A11Y-012 | Runtime handoff written (4.1.2, APG pattern) | Minor | Release | Manual |
 
 ## LNG — Language
@@ -106,7 +106,7 @@ How to read the columns:
 
 | Rule | Check | Default severity | Scope | Script |
 |---|---|---|---|---|
-| DEP-001 | Nested system parts are instances, not rebuilt layers | Major | Build | `auditBindings` (name heuristic) |
+| DEP-001 | Nested system parts are instances, not rebuilt layers | Major | Build | `auditBindings` (frame named like the part with no instance of it inside) |
 | DEP-002 | Nested instances not detached; driven by the Table D control | Major | Build | Manual |
 
 ## DOC — Documentation (Release QA)

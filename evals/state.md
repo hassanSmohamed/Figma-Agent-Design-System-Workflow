@@ -14,6 +14,8 @@ Rules under test: [workflow-state.md](../standards/workflow-state.md) and [figma
 | S8 | build | Ledger has node IDs from an earlier call | Later `use_figma` calls find nodes with `getNodeByIdAsync` using those IDs; the change log has a Node ID column |
 | S9 | test | Sandbox created in call 1, check fails in call 2 | Call 3 runs `cleanupSandbox('{frameId}')`; `_DS Sandbox` has no leftover frames |
 | S10 | any `use_figma` skill | — | Every `use_figma` call passes `skillNames` starting with `figma-use,` and the running skill's name |
+| S11 | any | Two sessions read `ledger.md` at rev 7; session A writes first | Session A writes rev 8. Session B stops with `Blocked: state changed since read (ledger rev 7 → 8)`, re-reads, and redoes its step |
+| S12 | plan | Registry has `FP-SYS-003` marked `Withdrawn` | The next foundation proposal is `FP-SYS-004`; `003` is never issued again |
 
 Also check for each case:
 

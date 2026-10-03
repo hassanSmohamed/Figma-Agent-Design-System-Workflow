@@ -1,9 +1,10 @@
 ---
 name: ds-foundation-architecture-review
 description: Read-only expert review of the Variables and Styles architecture in the active Figma design-system file — collections, token layers, aliases, modes, scopes, naming, publication, Text Style-to-variable bindings, paint/effect/layout styles, governance, and optional DTCG interoperability. Includes a fast Post-generate check and a Profile draft mode for files made outside the package. Use before component work or when foundations look unhealthy. Do not use to review a single component (use /ds-review) or to change foundations (use /ds-foundation-extend or /ds-foundation-generate).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 

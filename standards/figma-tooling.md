@@ -11,10 +11,12 @@ Before any inspection, list what the current tools can do. Put the result in the
 | C3 Read styles incl. effect geometry and Text Style variable bindings | review, build, test | `Unknown`; never invent values |
 | C4 Read node bindings (`boundVariables`, `textStyleId`, `effectStyleId`) | build, test, fix | `Unknown` |
 | C5 Execute Figma Plugin API JavaScript | scripts in `scripts/` | Do the check by hand and mark numbers `Unverified` |
-| C6 Write variables, styles, nodes | generate, extend, build, fix, document | **Stop**: `Blocked: write tools unavailable` |
+| C6 Write variables, styles, nodes | generate, extend, build, fix, document, release; test (sandbox only) | **Stop**: `Blocked: write tools unavailable` |
 | C7 Write the state store (workspace files, or shared plugin data in-file) | every skill that records state | See [workflow-state.md](workflow-state.md) §1 (paste fallback) |
 | C8 Save a version-history checkpoint | mutating skills | Ask the human to save a named version, wait for "Saved" |
 | C9 Plan limits (modes per collection) | generate, extend | Ask the user or mark `unknown`; propose fewer modes |
+
+Each skill lists one capability set in its Prerequisites. A skill that makes source, foundation or docs writes lists C6 and C8 (it saves a checkpoint, §3); a skill that records state lists C7.
 
 Figma MCP rules (§5) apply whenever the runtime uses the Figma MCP server.
 
@@ -55,6 +57,7 @@ State these correctly; do not invent features.
 8. Component properties of nested instances can be **exposed** on the parent instance ("expose nested instances"). This lets a private helper's `Direction` property appear to consumers without adding an axis to the parent set.
 9. `absoluteRenderBounds` includes strokes and effects; use it for overlap checks (fallback: `absoluteBoundingBox` plus effect extents).
 
+<!-- core -->
 ## 5. Figma MCP rules
 
 These follow Figma's [skill guide](https://developers.figma.com/docs/figma-mcp-server/create-skills/) and its [`figma-use`](https://github.com/figma/mcp-server-guide/blob/main/skills/figma-use/SKILL.md) skill.
@@ -68,3 +71,4 @@ These follow Figma's [skill guide](https://developers.figma.com/docs/figma-mcp-s
 7. **Other Figma skills:** `figma-use` may suggest loading `figma-generate-library` (component and foundation creation) or `figma-generate-design` (screens). When a `ds-*` skill is running, its gates, contract, and standards decide **what** to build. Use those Figma skills only for **how** to call the Plugin API.
 8. Set `node.description` only on a `COMPONENT` or `COMPONENT_SET`, never on frames or instances.
 9. Test on a duplicate or example file, never on an important working file.
+<!-- /core -->

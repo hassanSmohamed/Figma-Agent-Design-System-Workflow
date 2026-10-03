@@ -17,11 +17,26 @@ async function getCollectionsByName() {
   return Object.fromEntries(list.map((c) => [c.name, c]));
 }
 
-async function findVariable(name, collectionName) {
-  const vars = await figma.variables.getLocalVariablesAsync();
+/**
+ * Find one variable. `ref` is a name, a variable ID ('VariableID:…'), or { name, collection } / { id }.
+ * Library variables are not in the local list: pass their ID (from a node binding or the Profile).
+ * A name that exists in more than one collection throws; pass the collection to choose.
+ */
+async function findVariable(ref, collectionName) {
+  const { id, name, collection = collectionName } = typeof ref === 'string'
+    ? (ref.startsWith('VariableID:') ? { id: ref } : { name: ref })
+    : ref;
+  if (id) return figma.variables.getVariableByIdAsync(id);
   const cols = await getCollectionsByName();
-  const colId = collectionName ? cols[collectionName] && cols[collectionName].id : null;
-  return vars.find((v) => v.name === name && (!colId || v.variableCollectionId === colId)) || null;
+  if (collection && !cols[collection]) throw new Error(`Collection not found: ${collection}`);
+  const colId = collection ? cols[collection].id : null;
+  const hits = (await figma.variables.getLocalVariablesAsync())
+    .filter((v) => v.name === name && (!colId || v.variableCollectionId === colId));
+  if (hits.length > 1) {
+    const names = Object.values(cols).filter((c) => hits.some((v) => v.variableCollectionId === c.id)).map((c) => c.name);
+    throw new Error(`Ambiguous variable "${name}" in collections ${names.join(', ')}; pass the collection`);
+  }
+  return hits[0] || null;
 }
 
 /**
@@ -71,13 +86,18 @@ function walk(node, visit, path = []) {
   if ('children' in node) node.children.forEach((c) => walk(c, visit, here));
 }
 
+/** First node of `type` from `node` upward (inclusive), stopping before `stop`. */
+function closest(node, type, stop = null) {
+  for (let n = node; n && n !== stop; n = n.parent) if (n.type === type) return n;
+  return null;
+}
+
 function variantLabel(node) {
-  let n = node;
-  while (n && n.type !== 'COMPONENT') n = n.parent;
-  if (!n) return '(not in a component)';
-  return n.variantProperties
-    ? Object.entries(n.variantProperties).map(([k, v]) => `${k}=${v}`).join(', ')
-    : n.name;
+  const owner = closest(node, 'COMPONENT') || closest(node, 'INSTANCE');
+  if (!owner) return '(not in a component)';
+  return owner.variantProperties
+    ? Object.entries(owner.variantProperties).map(([k, v]) => `${k}=${v}`).join(', ')
+    : owner.name;
 }
 
 function renderBox(node) {
@@ -122,11 +142,19 @@ async function readState(kind, frameName) {
   return raw ? JSON.parse(raw) : null;
 }
 
-/** State write, in-file mode only. Workspace mode writes ds-state/ files instead. */
-async function writeState(kind, frameName, data) {
+/**
+ * State write, in-file mode only. Workspace mode writes ds-state/ files instead.
+ * `expectedRev` is the rev you read (0 for a new record); a different stored rev means someone else wrote first.
+ */
+async function writeState(kind, frameName, data, expectedRev) {
+  if (typeof expectedRev !== 'number') throw new Error('writeState needs expectedRev (the rev you read; 0 for a new record)');
+  const current = await readState(kind, frameName);
+  const currentRev = (current && current.rev) || 0;
+  if (currentRev !== expectedRev) return { written: false, conflict: true, currentRev, mutatedNodeIds: [] };
   const frame = await getStateFrame(kind, frameName, true);
-  frame.setSharedPluginData(DS_NAMESPACE, kind, JSON.stringify(data));
-  return { mutatedNodeIds: [frame.id] };
+  const rev = currentRev + 1;
+  frame.setSharedPluginData(DS_NAMESPACE, kind, JSON.stringify({ ...data, rev, updated: new Date().toISOString() }));
+  return { written: true, rev, mutatedNodeIds: [frame.id] };
 }
 
 /* ---------- Checkpoint ---------- */
@@ -178,7 +206,7 @@ async function cleanupSandbox(frameOrId) {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    getCollectionsByName, findVariable, resolveVariable, variableInfo, findComponentSet, walk, variantLabel,
+    getCollectionsByName, findVariable, resolveVariable, variableInfo, findComponentSet, walk, closest, variantLabel,
     renderBox, readState, writeState, nodeRef, saveCheckpoint, createSandbox, setSandboxMode, cleanupSandbox,
   };
 }

@@ -1,9 +1,10 @@
 ---
 name: ds-document
 description: Creates or updates usage-focused documentation for one tested Figma component ({Component} / Web, Tablet, or Mobile) — or, in Foundations mode, for a foundation set — using live instances only, a remembered docs template, usage evidence, scoped Styles & Variables, complete variants, property capabilities with examples, separate Theme / Language / Direction columns, version history, and developer notes. Docs-only writes; hands off to Release QA. Do not use before Build QA passes (use /ds-test), to fix defects found while documenting (use /ds-fix), or for code-side developer handoff (use /ds-handoff).
+license: MIT
 compatibility: Requires the Figma MCP server (use_figma) and the figma-use skill.
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   mcp-server: figma
 ---
 
@@ -28,7 +29,7 @@ Docs writes only (+ state writes for the docs style record and ledger). Never ed
 ## Prerequisites
 
 1. Invoke the `figma-use` skill before every `use_figma` call and pass `skillNames: "figma-use,ds-document"` ([figma-tooling](../../standards/figma-tooling.md) §5).
-2. Capability check (C1, C3, C4, C7); record it.
+2. Capability check (C1, C3, C4, C6, C7, C8); record it. Save a checkpoint before the first docs write ([figma-tooling](../../standards/figma-tooling.md) §3).
 3. Open the state store ([workflow-state](../../standards/workflow-state.md)).
 
 ## References
@@ -79,12 +80,12 @@ Docs writes only (+ state writes for the docs style record and ledger). Never ed
 | 2 | **Styles & Variables** | Per part: role, exact variable / Text Style / Effect Style, mode notes; 1–3 contextual mini-layouts with callouts. Links to Foundations, never redefines them |
 | 3 | **Anatomy** | Numbered parts on a live instance; required/optional; private helpers named |
 | 4 | **Variants** | Every contracted value at least once; invalid combinations labeled restricted |
-| 5 | **Behavior & interaction** | State meaning, pointer/touch/keyboard, focus, loading/disabled, motion; **Language** notes; **Direction** notes (how to set the helper's `Direction`, what mirrors); design a11y (contrast pairs with WCAG + APCA results, targets) |
+| 5 | **Behavior & interaction** | State meaning, pointer/touch/keyboard, focus, loading/disabled, motion; **Language** notes; **Direction** notes (every helper the consumer sets per instance, what mirrors; Table and Calendar add an RTL starter instance — [language-direction](../../standards/language-direction.md) §3); design a11y (contrast pairs with WCAG + APCA results, targets) |
 | 6 | **Detail specs** | Property capabilities (below), sizing, targets, nested dependencies |
 | 7 | **Usage** | Use for / Don't use for + alternatives |
 | 8 | **Composition** | Product-like layouts with neighbors and spacing, or `Usage evidence pending` |
 | 9 | **Edge cases** | Long EN, long AR, diacritics, mixed-direction values, empty/error/overflow, known defects |
-| 10 | **Developer notes** | Code prop mapping (contract §13 if present), token code syntax names, APG runtime pattern, keyboard and ARIA as `Implementation requirement` |
+| 10 | **Developer notes** | Code prop mapping (contract §13 if present), token code syntax names, APG runtime pattern, keyboard and ARIA as `Implementation requirement`; focusable components add "Sticky headers, toasts and overlays must not hide the focused component (WCAG 2.4.11)" |
 | 11 | **Version & changes** | Contract version history from the contract record; what changed per version; migration notes for majors |
 | 12 | **Status** | Docs status, open gaps, one next step |
 

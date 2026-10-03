@@ -3,7 +3,7 @@
 Sample names. A real plan uses live names and fills every section.
 
 ```text
-Skill: /ds-plan · Package 2.1.0 · Mode: New contract
+Skill: /ds-plan · Package 2.2.0 · Mode: New contract
 Target: Button / Web · Contract: CC-BUTTON-WEB-001 v0.3 · Profile: FPR-ACME-001 v1
 Capability: C1, C3, C4, C7 OK · Gates checked: 12/12 · Contract record: written
 ```
@@ -67,7 +67,7 @@ Capability: C1, C3, C4, C7 OK · Gates checked: 12/12 · Contract record: writte
 
 | A11Y rule | SC | Criterion | Evidence |
 |---|---|---|---|
-| A11Y-007 | 2.4.7 / 2.4.11 | Focus ring 2px `color/border/focus`, ≥ 3:1 vs fill and background, outside container | Contrast rows + render bounds |
+| A11Y-007 | 2.4.7 / 2.4.13 policy | Focus ring 2px `color/border/focus`, ≥ 3:1 vs fill and background, outside container | Contrast rows + render bounds |
 | A11Y-009 | 2.5.8 | Target ≥ 24px (medium height 40px) | Measured height |
 | A11Y-002 | 1.4.3 | Label vs fill: role `label-text` | WCAG + APCA rows, Light + Dark |
 
